@@ -1,3 +1,7 @@
+# 端口
+server:
+  port: 8080
+
 # 生产环境配置
 spring:
   config:

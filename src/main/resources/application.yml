@@ -1,7 +1,3 @@
-# 端口
-server:
-  port: 8081
-
 # 激活的配置文件(默认dev,打包时会被Maven profile替换)
 spring:
   profiles:
