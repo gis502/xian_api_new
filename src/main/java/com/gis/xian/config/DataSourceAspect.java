@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.config;
+package com.gis.xian.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;

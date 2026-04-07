@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.service.ex;
+package com.gis.xian.service.ex;
 
 /**
  * 业务层所有自定义异常父类

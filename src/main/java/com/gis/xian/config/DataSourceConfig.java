@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.config;
+package com.gis.xian.config;
 
 import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;

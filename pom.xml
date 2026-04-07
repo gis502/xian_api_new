@@ -191,7 +191,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
-        <finalName>basic_template_not_login_back</finalName>
+        <finalName>xian_api</finalName>
     </build>
 
 </project>

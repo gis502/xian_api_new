@@ -1,7 +1,7 @@
-package com.gis.basic_template_not_login_back.controller;
+package com.gis.xian.controller;
 
-import com.gis.basic_template_not_login_back.domain.ApiResponse;
-import com.gis.basic_template_not_login_back.utils.safety.SM2Utils;
+import com.gis.xian.domain.ApiResponse;
+import com.gis.xian.utils.safety.SM2Utils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;

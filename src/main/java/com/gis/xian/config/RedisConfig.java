@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.config;
+package com.gis.xian.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

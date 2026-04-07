@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.domain;
+package com.gis.xian.domain;
 
 import lombok.Data;
 

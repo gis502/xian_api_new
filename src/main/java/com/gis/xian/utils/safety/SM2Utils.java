@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.utils.safety;
+package com.gis.xian.utils.safety;
 
 import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;

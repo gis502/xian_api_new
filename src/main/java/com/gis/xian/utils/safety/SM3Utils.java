@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.utils.safety;
+package com.gis.xian.utils.safety;
 
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.util.encoders.Hex;

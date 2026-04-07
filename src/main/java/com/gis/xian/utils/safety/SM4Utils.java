@@ -1,4 +1,4 @@
-package com.gis.basic_template_not_login_back.utils.safety;
+package com.gis.xian.utils.safety;
 
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.engines.SM4Engine;

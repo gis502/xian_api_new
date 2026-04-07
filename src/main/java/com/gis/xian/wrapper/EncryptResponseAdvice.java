@@ -1,8 +1,8 @@
-package com.gis.basic_template_not_login_back.wrapper;
+package com.gis.xian.wrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gis.basic_template_not_login_back.config.CryptoProperties;
-import com.gis.basic_template_not_login_back.utils.safety.SM4Utils;
+import com.gis.xian.config.CryptoProperties;
+import com.gis.xian.utils.safety.SM4Utils;
 import jakarta.annotation.Resource;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

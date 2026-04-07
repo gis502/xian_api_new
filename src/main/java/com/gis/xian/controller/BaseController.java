@@ -1,7 +1,7 @@
-package com.gis.basic_template_not_login_back.controller;
+package com.gis.xian.controller;
 
-import com.gis.basic_template_not_login_back.domain.ApiResponse;
-import com.gis.basic_template_not_login_back.service.ex.ServiceException;
+import com.gis.xian.domain.ApiResponse;
+import com.gis.xian.service.ex.ServiceException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
