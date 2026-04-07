@@ -1,0 +1,41 @@
+# 生产环境配置
+spring:
+  config:
+    import: classpath:application-database-prod.yml
+  # redis
+  data:
+    redis:
+      host: 10.22.245.246
+      port: 6379
+      password: XAYJ@gis2603
+      database: 0
+      connect-timeout: 3000ms
+
+# 日志配置
+logging:
+  level:
+    root: WARN
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+  file:
+    name: ./logs/springboot-app.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: ./logs/springboot-app-%d{yyyy-MM-dd}.%i.log
+      max-file-size: 100MB
+      max-history: 7
+      total-size-cap: 1GB
+      clean-history-on-start: true
+
+
+# 安全配置
+safety:
+  # 加解密过滤路径配置
+  crypto:
+    # 响应无需加密的路径
+    no-encrypt-paths:
+      - /crypto/sm2/public-key
+    # 请求无需解密的路径
+    no-decrypt-paths:
+      - /crypto/sm2/public-key

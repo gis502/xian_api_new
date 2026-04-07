@@ -1,0 +1,21 @@
+# 端口
+server:
+  port: 8080
+
+# 激活的配置文件(默认dev,打包时会被Maven profile替换)
+spring:
+  profiles:
+    active: @spring.profiles.active@
+
+# MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.gis.basic_template_not_login_back.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 安全配置
+safety:
+  sm2:
+    # sm2公钥在redis存储名
+    global: 'sm2:keypair:global'

@@ -1,0 +1,42 @@
+# 开发环境配置
+spring:
+  config:
+    import: classpath:application-database-dev.yml
+  # redis
+  data:
+    redis:
+      host: 47.92.216.173
+      port: 7655
+      password: zhangsan
+      database: 0
+      connect-timeout: 3000ms
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+  file:
+    name: ./logs/springboot-app.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: ./logs/springboot-app-%d{yyyy-MM-dd}.%i.log
+      max-file-size: 100MB
+      max-history: 7
+      total-size-cap: 1GB
+      clean-history-on-start: true
+
+# 安全配置
+safety:
+  # 加解密过滤路径配置
+  crypto:
+    # 响应无需加密的路径
+    no-encrypt-paths:
+      - /crypto/sm2/public-key
+      - /druid
+    # 请求无需解密的路径
+    no-decrypt-paths:
+      - /crypto/sm2/public-key
+      - /druid
