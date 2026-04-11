@@ -1,0 +1,14 @@
+# 安全配置
+safety:
+  sm2:
+    # sm2公钥在redis存储名
+    global: 'xian:sm2:keypair:global'
+
+
+# 初始化数据存储
+init:
+  data:
+    # 基础信息点数据：滑坡、泥石流、山洪、内涝
+    base-points:
+      rainstorm: 'xian:init:data:base-points:rainstorm'
+      earthquake: 'xian:init:data:base-points:earthquake'

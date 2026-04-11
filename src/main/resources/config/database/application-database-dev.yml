@@ -25,7 +25,7 @@ spring:
 
     # 主库
     master:
-      url: jdbc:postgresql://47.92.216.173:7654/xian?characterEncoding=utf8&TimeZone=Asia/Shanghai
+      url: jdbc:postgresql://47.92.216.173:7654/xian_new?characterEncoding=utf8&TimeZone=Asia/Shanghai
       username: postgres
       password: zhangsan
       driver-class-name: org.postgresql.Driver

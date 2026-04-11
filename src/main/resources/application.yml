@@ -2,6 +2,8 @@
 spring:
   profiles:
     active: @spring.profiles.active@
+  config:
+    import: classpath:config/redis/redis-key.yml
 
 # MyBatis 配置
 mybatis:
@@ -9,9 +11,3 @@ mybatis:
   type-aliases-package: com.gis.basic_template_not_login_back.entity
   configuration:
     map-underscore-to-camel-case: true
-
-# 安全配置
-safety:
-  sm2:
-    # sm2公钥在redis存储名
-    global: 'sm2:keypair:global'

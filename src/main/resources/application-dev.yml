@@ -5,7 +5,8 @@ server:
 # 开发环境配置
 spring:
   config:
-    import: classpath:application-database-dev.yml
+    import: classpath:config/database/application-database-dev.yml
+
   # redis
   data:
     redis:

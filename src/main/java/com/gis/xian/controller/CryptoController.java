@@ -4,6 +4,7 @@ import com.gis.xian.domain.ApiResponse;
 import com.gis.xian.utils.safety.SM2Utils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/crypto")
+@Slf4j
 public class CryptoController extends BaseController {
 
     @Resource
@@ -30,7 +32,7 @@ public class CryptoController extends BaseController {
         if (sm2KeyPairObj == null) {
             Map<String, String> sm2KeyPair = SM2Utils.generateKeyPair();
             redisTemplate.opsForValue().set(sm2KeyPairRedisKey, sm2KeyPair);
-            System.out.println("SM2密钥对已生成并存储到Redis");
+            log.info("SM2密钥对已生成并存储到Redis");
         }
     }
 
