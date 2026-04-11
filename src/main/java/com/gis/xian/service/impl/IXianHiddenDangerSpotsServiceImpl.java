@@ -22,10 +22,10 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
     @Resource
     private XianHiddenDangerSpotsMapper xianHiddenDangerSpotsMapper;
 
-    @Value("${init.data.base-points.rainstorm}")
+    @Value("${init.data.base-points.hidden-danger.rainstorm}")
     private String rainstormBasePointsKey;
 
-    @Value("${init.data.base-points.earthquake}")
+    @Value("${init.data.base-points.hidden-danger.earthquake}")
     private String earthquakeBasePointsKey;
 
     @Override

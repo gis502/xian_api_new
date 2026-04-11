@@ -3,6 +3,7 @@ package com.gis.xian.task;
 import com.alibaba.fastjson2.JSON;
 import com.gis.xian.enums.DisasterTypeEnum;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
+import com.gis.xian.mapper.XianRiskSpotsMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,19 @@ public class InitializeData {
     private XianHiddenDangerSpotsMapper xianHiddenDangerSpotsMapper;
 
     @Resource
+    private XianRiskSpotsMapper xianRiskSpotsMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
-    @Value("${init.data.base-points.rainstorm}")
+    @Value("${init.data.base-points.hidden-danger.rainstorm}")
     private String rainstormBasePointsKey;
 
-    @Value("${init.data.base-points.earthquake}")
+    @Value("${init.data.base-points.hidden-danger.earthquake}")
     private String earthquakeBasePointsKey;
+
+    @Value("${init.data.base-points.risk}")
+    private String riskBasePointsKey;
 
     @PostConstruct
     @Async("xianPool")
@@ -39,6 +46,8 @@ public class InitializeData {
         redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType())));
         redisTemplate.opsForValue().set(earthquakeBasePointsKey, JSON.toJSONString(xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType())));
 
+        // 加载风险点基本信息写入redis
+        redisTemplate.opsForValue().set(riskBasePointsKey, JSON.toJSONString(xianRiskSpotsMapper.getBasePoints()));
         log.info("初始化数据完成");
     }
 }

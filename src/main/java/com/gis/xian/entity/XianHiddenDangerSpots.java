@@ -154,32 +154,4 @@ public class XianHiddenDangerSpots {
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
         return result;
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", fieldCode=").append(fieldCode);
-        sb.append(", province=").append(province);
-        sb.append(", provinceId=").append(provinceId);
-        sb.append(", city=").append(city);
-        sb.append(", cityId=").append(cityId);
-        sb.append(", county=").append(county);
-        sb.append(", countyId=").append(countyId);
-        sb.append(", village=").append(village);
-        sb.append(", disasterName=").append(disasterName);
-        sb.append(", lon=").append(lon);
-        sb.append(", lat=").append(lat);
-        sb.append(", geom=").append(geom);
-        sb.append(", position=").append(position);
-        sb.append(", disasterType=").append(disasterType);
-        sb.append(", scaleGrade=").append(scaleGrade);
-        sb.append(", riskGrade=").append(riskGrade);
-        sb.append(", isDelete=").append(isDelete);
-        sb.append("]");
-        return sb.toString();
-    }
 }

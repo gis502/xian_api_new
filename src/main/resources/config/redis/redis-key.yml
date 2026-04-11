@@ -10,5 +10,7 @@ init:
   data:
     # 基础信息点数据：滑坡、泥石流、山洪、内涝
     base-points:
-      rainstorm: 'xian:init:data:base-points:rainstorm'
-      earthquake: 'xian:init:data:base-points:earthquake'
+      hidden-danger:
+        rainstorm: 'xian:init:data:base-points:hidden-danger:rainstorm'
+        earthquake: 'xian:init:data:base-points:hidden-danger:earthquake'
+      risk: 'xian:init:data:base-points:risk'
