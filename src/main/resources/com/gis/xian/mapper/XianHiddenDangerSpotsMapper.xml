@@ -25,25 +25,8 @@
         <result property="isDelete" column="is_delete" />
     </resultMap>
 
-    <resultMap id="XianHiddenDangerSpotsBasePointResultMap" type="com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo">
-        <id property="id" column="id" />
-        <result property="lon" column="lon" />
-        <result property="lat" column="lat" />
-        <result property="disasterType" column="disaster_type" />
-    </resultMap>
-
-    <resultMap id="XianHiddenDangerSpotsPointDetailResultMap" type="com.gis.xian.vo.XianHiddenDangerSpotsPointDetailVo">
-        <id property="id" column="id" />
-        <result property="fieldCode" column="field_code" />
-        <result property="disasterName" column="disaster_name" />
-        <result property="position" column="position" />
-        <result property="disasterType" column="disaster_type" />
-        <result property="scaleGrade" column="scale_grade" />
-        <result property="riskGrade" column="risk_grade" />
-    </resultMap>
-
     <!-- 获取所有基础点：滑坡、泥石流、山洪、内涝 -->
-    <select id="getBasePoints" resultMap="XianHiddenDangerSpotsBasePointResultMap">
+    <select id="getBasePoints" resultMap="XianHiddenDangerSpotsResultMap">
         SELECT id, lon, lat, disaster_type FROM xian_hidden_danger_spots
         <where>
             <choose>
@@ -58,7 +41,7 @@
     </select>
 
     <!-- 根据id获取隐患点详情 -->
-    <select id="getPointDetailById" resultMap="XianHiddenDangerSpotsPointDetailResultMap">
+    <select id="getPointDetailById" resultMap="XianHiddenDangerSpotsResultMap">
         SELECT id, field_code, disaster_name, position, disaster_type, scale_grade, risk_grade FROM xian_hidden_danger_spots
         <where>
             id = #{id}

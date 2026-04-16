@@ -1,7 +1,10 @@
 package com.gis.xian.vo;
 
+import com.gis.xian.entity.XianHiddenDangerSpots;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -24,6 +27,23 @@ public class XianHiddenDangerSpotsBasePointVo {
      * 维度
      */
     private Double lat;
+
+    public static XianHiddenDangerSpotsBasePointVo entity2Vo(XianHiddenDangerSpots entity) {
+        XianHiddenDangerSpotsBasePointVo vo = new XianHiddenDangerSpotsBasePointVo();
+        vo.setId(entity.getId());
+        vo.setLon(entity.getLon());
+        vo.setLat(entity.getLat());
+        vo.setDisasterType(entity.getDisasterType());
+        return vo;
+    }
+
+    public static List<XianHiddenDangerSpotsBasePointVo> entity2Vo(List<XianHiddenDangerSpots> entityList) {
+        List<XianHiddenDangerSpotsBasePointVo> voList = new ArrayList<>();
+        for (XianHiddenDangerSpots entity : entityList) {
+            voList.add(entity2Vo(entity));
+        }
+        return voList;
+    }
 
     /**
      * 灾害类型

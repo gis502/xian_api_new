@@ -1,7 +1,10 @@
 package com.gis.xian.vo;
 
+import com.gis.xian.entity.XianRiskSpots;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -65,6 +68,31 @@ public class XianRiskSpotsPointDetailVo {
      * 纬度
      */
     private Double lat;
+
+    public static XianRiskSpotsPointDetailVo entity2Vo(XianRiskSpots entity) {
+        XianRiskSpotsPointDetailVo vo = new XianRiskSpotsPointDetailVo();
+        vo.setId(entity.getId());
+        vo.setRiskName(entity.getRiskName());
+        vo.setUnitCode(entity.getUnitCode());
+        vo.setPosition(entity.getPosition());
+        vo.setResidentCounts(entity.getResidentCounts());
+        vo.setRiskProperty(entity.getRiskProperty());
+        vo.setPermanentPopulation(entity.getPermanentPopulation());
+        vo.setHousing(entity.getHousing());
+        vo.setInspectorName(entity.getInspectorName());
+        vo.setInspectorTele(entity.getInspectorTele());
+        vo.setLon(entity.getLon());
+        vo.setLat(entity.getLat());
+        return vo;
+    }
+
+    public static List<XianRiskSpotsPointDetailVo> entity2Vo(List<XianRiskSpots> entityList) {
+        List<XianRiskSpotsPointDetailVo> voList = new ArrayList<>();
+        for (XianRiskSpots entity : entityList) {
+            voList.add(entity2Vo(entity));
+        }
+        return voList;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -30,7 +30,7 @@ public class IXianRiskSpotsServiceImpl implements XianRiskSpotsService {
         Object data = redisTemplate.opsForValue().get(riskPointKey);
 
         if (data == null) {
-            List<XianRiskSpotsBasePointVo> basePoints = xianRiskSpotsMapper.getBasePoints();
+            List<XianRiskSpotsBasePointVo> basePoints = XianRiskSpotsBasePointVo.entity2Vo(xianRiskSpotsMapper.getBasePoints());
             redisTemplate.opsForValue().set(riskPointKey, JSON.toJSONString(basePoints));
             return basePoints;
         }
@@ -40,6 +40,6 @@ public class IXianRiskSpotsServiceImpl implements XianRiskSpotsService {
 
     @Override
     public XianRiskSpotsPointDetailVo getPointDetailById(Long id) {
-        return xianRiskSpotsMapper.getPointDetailById(id);
+        return XianRiskSpotsPointDetailVo.entity2Vo(xianRiskSpotsMapper.getPointDetailById(id));
     }
 }

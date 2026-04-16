@@ -1,6 +1,7 @@
 package com.gis.xian.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.gis.xian.entity.XianHiddenDangerSpots;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHiddenDangerSpotsPointDetailVo;
 import com.gis.xian.enums.DisasterTypeEnum;
@@ -40,7 +41,7 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
         }
 
         if (data == null) {
-            List<XianHiddenDangerSpotsBasePointVo> basePoints = xianHiddenDangerSpotsMapper.getBasePoints(disasterType);
+            List<XianHiddenDangerSpotsBasePointVo> basePoints = XianHiddenDangerSpotsBasePointVo.entity2Vo(xianHiddenDangerSpotsMapper.getBasePoints(disasterType));
 
             if(DisasterTypeEnum.RAINSTORM.getType().equals(disasterType)) {
                 redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(basePoints));
@@ -55,6 +56,6 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
 
     @Override
     public XianHiddenDangerSpotsPointDetailVo getPointDetailById(Long id) {
-        return xianHiddenDangerSpotsMapper.getPointDetailById(id);
+        return XianHiddenDangerSpotsPointDetailVo.entity2Vo(xianHiddenDangerSpotsMapper.getPointDetailById(id));
     }
 }

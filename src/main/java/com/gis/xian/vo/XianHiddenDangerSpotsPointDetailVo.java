@@ -1,7 +1,10 @@
 package com.gis.xian.vo;
 
+import com.gis.xian.entity.XianHiddenDangerSpots;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -40,6 +43,26 @@ public class XianHiddenDangerSpotsPointDetailVo {
      * 险情等级
      */
     private String riskGrade;
+
+    public static XianHiddenDangerSpotsPointDetailVo entity2Vo(XianHiddenDangerSpots entity) {
+        XianHiddenDangerSpotsPointDetailVo vo = new XianHiddenDangerSpotsPointDetailVo();
+        vo.setId(entity.getId());
+        vo.setFieldCode(entity.getFieldCode());
+        vo.setDisasterName(entity.getDisasterName());
+        vo.setPosition(entity.getPosition());
+        vo.setDisasterType(entity.getDisasterType());
+        vo.setScaleGrade(entity.getScaleGrade());
+        vo.setRiskGrade(entity.getRiskGrade());
+        return vo;
+    }
+
+    public static List<XianHiddenDangerSpotsPointDetailVo> entity2Vo(List<XianHiddenDangerSpots> entityList) {
+        List<XianHiddenDangerSpotsPointDetailVo> voList = new ArrayList<>();
+        for (XianHiddenDangerSpots entity : entityList) {
+            voList.add(entity2Vo(entity));
+        }
+        return voList;
+    }
 
     @Override
     public boolean equals(Object o) {

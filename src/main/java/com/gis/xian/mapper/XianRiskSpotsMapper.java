@@ -1,7 +1,6 @@
 package com.gis.xian.mapper;
 
-import com.gis.xian.vo.XianRiskSpotsBasePointVo;
-import com.gis.xian.vo.XianRiskSpotsPointDetailVo;
+import com.gis.xian.entity.XianRiskSpots;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface XianRiskSpotsMapper {
      * 获取所有风险点基础信息
      * @return 风险点基础列表
      */
-    List<XianRiskSpotsBasePointVo> getBasePoints();
+    List<XianRiskSpots> getBasePoints();
 
 
     /**
@@ -24,7 +23,7 @@ public interface XianRiskSpotsMapper {
      * @param id 风险点id
      * @return 风险点详情
      */
-    XianRiskSpotsPointDetailVo getPointDetailById(Long id);
+    XianRiskSpots getPointDetailById(Long id);
 }
 
 
