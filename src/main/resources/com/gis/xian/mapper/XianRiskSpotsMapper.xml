@@ -29,13 +29,13 @@
             <result property="isDelete" column="is_delete" />
     </resultMap>
 
-    <resultMap id="XianRiskSpotsBasePointResultMap" type="com.gis.xian.entity.XianRiskSpotsBasePoint">
+    <resultMap id="XianRiskSpotsBasePointResultMap" type="com.gis.xian.vo.XianRiskSpotsBasePointVo">
         <id property="id" column="id" />
         <result property="lon" column="lon" />
         <result property="lat" column="lat" />
     </resultMap>
 
-    <resultMap id="XianRiskSpotsPointDetailResultMap" type="com.gis.xian.entity.XianRiskSpotsPointDetail">
+    <resultMap id="XianRiskSpotsPointDetailResultMap" type="com.gis.xian.vo.XianRiskSpotsPointDetailVo">
         <id property="id" column="id" />
         <result property="riskName" column="risk_name" />
         <result property="unitCode" column="unit_code" />
@@ -56,7 +56,7 @@
     </select>
 
     <!-- 根据id获取风险点信息 -->
-    <select id="getPointDetailById" resultType="com.gis.xian.entity.XianRiskSpotsPointDetail">
+    <select id="getPointDetailById" resultType="com.gis.xian.vo.XianRiskSpotsPointDetailVo">
         SELECT id, risk_name, unit_code, position, resident_counts, risk_property, permanent_population, housing, inspector_name, inspector_tele, lon, lat FROM xian_risk_spots
         <where>
             id = #{id}

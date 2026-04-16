@@ -1,8 +1,8 @@
 package com.gis.xian.controller;
 
 import com.gis.xian.domain.ApiResponse;
-import com.gis.xian.entity.XianRiskSpotsBasePoint;
-import com.gis.xian.entity.XianRiskSpotsPointDetail;
+import com.gis.xian.vo.XianRiskSpotsBasePointVo;
+import com.gis.xian.vo.XianRiskSpotsPointDetailVo;
 import com.gis.xian.service.XianRiskSpotsService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +20,12 @@ public class XianRiskSpotsController {
     private XianRiskSpotsService xianRiskSpotsService;
 
     @GetMapping("/base-points")
-    public ApiResponse<List<XianRiskSpotsBasePoint>> getBasePoints() {
+    public ApiResponse<List<XianRiskSpotsBasePointVo>> getBasePoints() {
         return ApiResponse.ok(xianRiskSpotsService.getBasePoints());
     }
 
     @GetMapping("point-detail/{id}")
-    public ApiResponse<XianRiskSpotsPointDetail> getPointDetailById(@PathVariable String id) {
+    public ApiResponse<XianRiskSpotsPointDetailVo> getPointDetailById(@PathVariable String id) {
         return ApiResponse.ok(xianRiskSpotsService.getPointDetailById(Long.parseLong(id)));
     }
 }

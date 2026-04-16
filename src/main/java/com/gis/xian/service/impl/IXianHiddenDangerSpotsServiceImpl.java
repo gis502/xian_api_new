@@ -1,8 +1,8 @@
 package com.gis.xian.service.impl;
 
 import com.alibaba.fastjson2.JSON;
-import com.gis.xian.entity.XianHiddenDangerSpotsBasePoint;
-import com.gis.xian.entity.XianHiddenDangerSpotsPointDetail;
+import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
+import com.gis.xian.vo.XianHiddenDangerSpotsPointDetailVo;
 import com.gis.xian.enums.DisasterTypeEnum;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
 import com.gis.xian.service.XianHiddenDangerSpotsService;
@@ -29,7 +29,7 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
     private String earthquakeBasePointsKey;
 
     @Override
-    public List<XianHiddenDangerSpotsBasePoint> getBasePoints(String disasterType) {
+    public List<XianHiddenDangerSpotsBasePointVo> getBasePoints(String disasterType) {
         // 从redis中读取基础点信息
         Object data = null;
 
@@ -40,7 +40,7 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
         }
 
         if (data == null) {
-            List<XianHiddenDangerSpotsBasePoint> basePoints = xianHiddenDangerSpotsMapper.getBasePoints(disasterType);
+            List<XianHiddenDangerSpotsBasePointVo> basePoints = xianHiddenDangerSpotsMapper.getBasePoints(disasterType);
 
             if(DisasterTypeEnum.RAINSTORM.getType().equals(disasterType)) {
                 redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(basePoints));
@@ -50,11 +50,11 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
             return basePoints;
         }
 
-        return JSON.parseArray(data.toString(), XianHiddenDangerSpotsBasePoint.class);
+        return JSON.parseArray(data.toString(), XianHiddenDangerSpotsBasePointVo.class);
     }
 
     @Override
-    public XianHiddenDangerSpotsPointDetail getPointDetailById(Long id) {
+    public XianHiddenDangerSpotsPointDetailVo getPointDetailById(Long id) {
         return xianHiddenDangerSpotsMapper.getPointDetailById(id);
     }
 }

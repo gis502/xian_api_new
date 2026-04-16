@@ -1,11 +1,11 @@
-package com.gis.xian.entity;
+package com.gis.xian.vo;
 
 import lombok.Data;
 
 import java.util.Objects;
 
 @Data
-public class XianRiskSpotsBasePoint {
+public class XianRiskSpotsBasePointVo {
     /**
      * 序号
      */
@@ -25,7 +25,7 @@ public class XianRiskSpotsBasePoint {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        XianRiskSpotsBasePoint that = (XianRiskSpotsBasePoint) o;
+        XianRiskSpotsBasePointVo that = (XianRiskSpotsBasePointVo) o;
         return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 

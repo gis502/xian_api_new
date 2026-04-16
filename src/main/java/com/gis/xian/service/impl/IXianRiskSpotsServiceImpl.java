@@ -1,10 +1,8 @@
 package com.gis.xian.service.impl;
 
 import com.alibaba.fastjson2.JSON;
-import com.gis.xian.entity.XianHiddenDangerSpotsBasePoint;
-import com.gis.xian.entity.XianRiskSpotsBasePoint;
-import com.gis.xian.entity.XianRiskSpotsPointDetail;
-import com.gis.xian.enums.DisasterTypeEnum;
+import com.gis.xian.vo.XianRiskSpotsBasePointVo;
+import com.gis.xian.vo.XianRiskSpotsPointDetailVo;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
 import com.gis.xian.service.XianRiskSpotsService;
 import jakarta.annotation.Resource;
@@ -27,21 +25,21 @@ public class IXianRiskSpotsServiceImpl implements XianRiskSpotsService {
     private String riskPointKey;
 
     @Override
-    public List<XianRiskSpotsBasePoint> getBasePoints() {
+    public List<XianRiskSpotsBasePointVo> getBasePoints() {
         // 从redis中读取基础点信息
         Object data = redisTemplate.opsForValue().get(riskPointKey);
 
         if (data == null) {
-            List<XianRiskSpotsBasePoint> basePoints = xianRiskSpotsMapper.getBasePoints();
+            List<XianRiskSpotsBasePointVo> basePoints = xianRiskSpotsMapper.getBasePoints();
             redisTemplate.opsForValue().set(riskPointKey, JSON.toJSONString(basePoints));
             return basePoints;
         }
 
-        return JSON.parseArray(data.toString(), XianRiskSpotsBasePoint.class);
+        return JSON.parseArray(data.toString(), XianRiskSpotsBasePointVo.class);
     }
 
     @Override
-    public XianRiskSpotsPointDetail getPointDetailById(Long id) {
+    public XianRiskSpotsPointDetailVo getPointDetailById(Long id) {
         return xianRiskSpotsMapper.getPointDetailById(id);
     }
 }

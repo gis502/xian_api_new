@@ -1,11 +1,11 @@
-package com.gis.xian.entity;
+package com.gis.xian.vo;
 
 import lombok.Data;
 
 import java.util.Objects;
 
 @Data
-public class XianHiddenDangerSpotsPointDetail {
+public class XianHiddenDangerSpotsPointDetailVo {
     /**
      * 序号
      */
@@ -45,7 +45,7 @@ public class XianHiddenDangerSpotsPointDetail {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        XianHiddenDangerSpotsPointDetail that = (XianHiddenDangerSpotsPointDetail) o;
+        XianHiddenDangerSpotsPointDetailVo that = (XianHiddenDangerSpotsPointDetailVo) o;
         return Objects.equals(id, that.id) && Objects.equals(fieldCode, that.fieldCode) && Objects.equals(disasterName, that.disasterName) && Objects.equals(position, that.position) && Objects.equals(disasterType, that.disasterType) && Objects.equals(scaleGrade, that.scaleGrade) && Objects.equals(riskGrade, that.riskGrade);
     }
 

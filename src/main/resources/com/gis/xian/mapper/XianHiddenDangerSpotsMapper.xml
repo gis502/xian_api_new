@@ -25,14 +25,14 @@
         <result property="isDelete" column="is_delete" />
     </resultMap>
 
-    <resultMap id="XianHiddenDangerSpotsBasePointResultMap" type="com.gis.xian.entity.XianHiddenDangerSpotsBasePoint">
+    <resultMap id="XianHiddenDangerSpotsBasePointResultMap" type="com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo">
         <id property="id" column="id" />
         <result property="lon" column="lon" />
         <result property="lat" column="lat" />
         <result property="disasterType" column="disaster_type" />
     </resultMap>
 
-    <resultMap id="XianHiddenDangerSpotsPointDetailResultMap" type="com.gis.xian.entity.XianHiddenDangerSpotsPointDetail">
+    <resultMap id="XianHiddenDangerSpotsPointDetailResultMap" type="com.gis.xian.vo.XianHiddenDangerSpotsPointDetailVo">
         <id property="id" column="id" />
         <result property="fieldCode" column="field_code" />
         <result property="disasterName" column="disaster_name" />
