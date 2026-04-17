@@ -32,13 +32,16 @@
     <!-- 获取所有风险点基础信息 -->
     <select id="getBasePoints" resultMap="XianRiskSpotsResultMap">
         SELECT id, lon, lat FROM xian_risk_spots
+        <where>
+            is_delete = 0
+        </where>
     </select>
 
     <!-- 根据id获取风险点信息 -->
     <select id="getPointDetailById" resultMap="XianRiskSpotsResultMap">
         SELECT id, risk_name, unit_code, position, resident_counts, risk_property, permanent_population, housing, inspector_name, inspector_tele, lon, lat FROM xian_risk_spots
         <where>
-            id = #{id}
+            id = #{id} AND is_delete = 0
         </where>
     </select>
 

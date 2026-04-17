@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianHospitalsMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianHospitals">
+            <id property="id" column="id" />
+            <result property="name" column="name" />
+            <result property="address" column="address" />
+            <result property="typeCode" column="type_code" />
+            <result property="type" column="type" />
+            <result property="middleType" column="middle_type" />
+            <result property="perferssionType" column="perferssion_type" />
+            <result property="level" column="level" />
+            <result property="institutionNature" column="institution_nature" />
+            <result property="area" column="area" />
+            <result property="structionArea" column="struction_area" />
+            <result property="devices" column="devices" />
+            <result property="workers" column="workers" />
+            <result property="techWorker" column="tech_worker" />
+            <result property="nurse" column="nurse" />
+            <result property="dedicateWorker" column="dedicate_worker" />
+            <result property="sumPeople" column="sum_people" />
+            <result property="inPeople" column="in_people" />
+            <result property="outPeople" column="out_people" />
+            <result property="beds" column="beds" />
+            <result property="negativeBeds" column="negative_beds" />
+            <result property="icuBeds" column="icu_beds" />
+            <result property="savePeople" column="save_people" />
+            <result property="controllerCar" column="controller_car" />
+            <result property="transferCars" column="transfer_cars" />
+            <result property="inspectorCars" column="inspector_cars" />
+            <result property="negativeCars" column="negative_cars" />
+            <result property="bloodCars" column="blood_cars" />
+            <result property="sendBloodCars" column="send_blood_cars" />
+            <result property="safePeople" column="safe_people" />
+            <result property="emergencyPower" column="emergency_power" />
+            <result property="waterSupply" column="water_supply" />
+            <result property="heating" column="heating" />
+            <result property="connectionType" column="connection_type" />
+            <result property="hadDisasterType" column="had_disaster_type" />
+            <result property="emergencyPlan" column="emergency_plan" />
+            <result property="governmentCode" column="government_code" />
+            <result property="village" column="village" />
+            <result property="city" column="city" />
+            <result property="createName" column="create_name" />
+            <result property="unitHead" column="unit_head" />
+            <result property="position" column="position" />
+            <result property="statisticsHead" column="statistics_head" />
+            <result property="telephone" column="telephone" />
+            <result property="province" column="province" />
+            <result property="createTime" column="create_time" />
+            <result property="reportTime" column="report_time" />
+            <result property="county" column="county" />
+            <result property="country" column="country" />
+            <result property="street" column="street" />
+            <result property="fillName" column="fill_name" />
+            <result property="institutionCodeType" column="institution_code_type" />
+            <result property="institutionCode" column="institution_code" />
+            <result property="physicalKey" column="physical_key" />
+            <result property="provinceCode" column="province_code" />
+            <result property="cityCode" column="city_code" />
+            <result property="countyCode" column="county_code" />
+            <result property="updateTime" column="update_time" />
+            <result property="writeTime" column="write_time" />
+            <result property="lon" column="lon" />
+            <result property="lat" column="lat" />
+            <result property="point" column="point" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+
+</mapper>

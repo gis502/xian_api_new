@@ -38,6 +38,7 @@
                 </otherwise>
             </choose>
         </where>
+       AND is_delete = 0
     </select>
 
     <!-- 根据id获取隐患点详情 -->
@@ -46,5 +47,6 @@
         <where>
             id = #{id}
         </where>
+        AND is_delete = 0
     </select>
 </mapper>
