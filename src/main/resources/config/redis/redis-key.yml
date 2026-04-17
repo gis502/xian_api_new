@@ -14,3 +14,4 @@ init:
         rainstorm: 'xian:init:data:base-points:hidden-danger:rainstorm'
         earthquake: 'xian:init:data:base-points:hidden-danger:earthquake'
       risk: 'xian:init:data:base-points:risk'
+      hospitals: 'xian:init:data:base-points:hospitals'

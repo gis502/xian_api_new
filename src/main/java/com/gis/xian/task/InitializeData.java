@@ -3,8 +3,10 @@ package com.gis.xian.task;
 import com.alibaba.fastjson2.JSON;
 import com.gis.xian.enums.DisasterTypeEnum;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
+import com.gis.xian.mapper.XianHospitalsMapper;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
+import com.gis.xian.vo.XianHospitalsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
@@ -28,6 +30,9 @@ public class InitializeData {
     private XianRiskSpotsMapper xianRiskSpotsMapper;
 
     @Resource
+    private XianHospitalsMapper xianHospitalsMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -38,6 +43,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.risk}")
     private String riskBasePointsKey;
+
+    @Value("${init.data.base-points.hospitals}")
+    private String hospitalsBasePointsKey;
 
     @PostConstruct
     @Async("xianPool")
@@ -60,6 +68,13 @@ public class InitializeData {
         redisTemplate.opsForValue().set(riskBasePointsKey, JSON.toJSONString(
                 XianRiskSpotsBasePointVo.entity2Vo(
                     xianRiskSpotsMapper.getBasePoints())
+                )
+        );
+
+        // 加载医院基本信息写入redis
+        redisTemplate.opsForValue().set(hospitalsBasePointsKey, JSON.toJSONString(
+                XianHospitalsBasePointVo.entity2Vo(
+                    xianHospitalsMapper.getBasePoints())
                 )
         );
         log.info("初始化数据完成");

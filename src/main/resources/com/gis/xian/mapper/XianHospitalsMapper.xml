@@ -70,5 +70,19 @@
             <result property="isDelete" column="is_delete" />
     </resultMap>
 
+    <!-- 获取所有医院基础点 -->
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, lon, lat FROM xian_hospitals
+        <where>
+            is_delete = 0
+        </where>
+    </select>
 
+    <!-- 根据id获取医院详情 -->
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, name, level, address, lon, lat, sum_people, unit_head, telephone FROM xian_hospitals
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
 </mapper>
