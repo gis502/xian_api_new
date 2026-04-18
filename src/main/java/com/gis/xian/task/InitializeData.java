@@ -8,12 +8,14 @@ import com.gis.xian.mapper.XianFirefighterMapper;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
 import com.gis.xian.mapper.XianHospitalsMapper;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
+import com.gis.xian.mapper.XianStorePointsMapper;
 import com.gis.xian.vo.XianDangerousSourceBasePointVo;
 import com.gis.xian.vo.XianEmergencyShelterBasePointVo;
 import com.gis.xian.vo.XianFirefighterBasePointVo;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHospitalsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
+import com.gis.xian.vo.XianStorePointsBasePointVo;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,9 @@ public class InitializeData {
     private XianFirefighterMapper xianFirefighterMapper;
 
     @Resource
+    private XianStorePointsMapper xianStorePointsMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -70,6 +75,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.firefighter}")
     private String firefighterBasePointsKey;
+
+    @Value("${init.data.base-points.store-points}")
+    private String storePointsBasePointsKey;
 
     @PostConstruct
     @Async("xianPool")
@@ -120,6 +128,13 @@ public class InitializeData {
         redisTemplate.opsForValue().set(firefighterBasePointsKey, JSON.toJSONString(
                 XianFirefighterBasePointVo.entity2Vo(
                     xianFirefighterMapper.getBasePoints())
+                )
+        );
+
+        // 加载物资储备点基本信息写入redis
+        redisTemplate.opsForValue().set(storePointsBasePointsKey, JSON.toJSONString(
+                XianStorePointsBasePointVo.entity2Vo(
+                    xianStorePointsMapper.getBasePoints())
                 )
         );
         log.info("初始化数据完成");

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianStorePointsMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianStorePoints">
+            <id property="id" column="id" />
+            <result property="name" column="name" />
+            <result property="address" column="address" />
+            <result property="department" column="department" />
+            <result property="level" column="level" />
+            <result property="type" column="type" />
+            <result property="standTime" column="stand_time" />
+            <result property="volume" column="volume" />
+            <result property="maintenance" column="maintenance" />
+            <result property="tent" column="tent" />
+            <result property="quilt" column="quilt" />
+            <result property="clothes" column="clothes" />
+            <result property="towelBlanket" column="towel_blanket" />
+            <result property="blanket" column="blanket" />
+            <result property="sleepingBed" column="sleeping_bed" />
+            <result property="foldingBed" column="folding_bed" />
+            <result property="wc" column="wc" />
+            <result property="shlwzzhje" column="shlwzzhje" />
+            <result property="rubberBoat" column="rubber_boat" />
+            <result property="rescueBoat" column="rescue_boat" />
+            <result property="saveBoat" column="save_boat" />
+            <result property="saveClothes" column="save_clothes" />
+            <result property="jsq" column="jsq" />
+            <result property="bzd" column="bzd" />
+            <result property="md" column="md" />
+            <result property="waterPump" column="water_pump" />
+            <result property="jylwzzhje" column="jylwzzhje" />
+            <result property="generator" column="generator" />
+            <result property="emergencyLight" column="emergency_light" />
+            <result property="qtwzzhje" column="qtwzzhje" />
+            <result property="saveClo" column="save_clo" />
+            <result property="saveTool" column="save_tool" />
+            <result property="zhje" column="zhje" />
+            <result property="city" column="city" />
+            <result property="province" column="province" />
+            <result property="village" column="village" />
+            <result property="reportTime" column="report_time" />
+            <result property="country" column="country" />
+            <result property="creatName" column="creat_name" />
+            <result property="county" column="county" />
+            <result property="unitHead" column="unit_head" />
+            <result property="fillName" column="fill_name" />
+            <result property="telephone" column="telephone" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+            <result property="overwriteTime" column="overwrite_time" />
+            <result property="lon" column="lon" />
+            <result property="lat" column="lat" />
+            <result property="point" column="point" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <!-- 获取所有物资储备点基础点 -->
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, lon, lat FROM xian_store_points
+        <where>
+            is_delete = 0
+            <!-- 确定落在西安境内 -->
+            AND ST_Within(point, (SELECT geom FROM xian_district WHERE id = 1))
+        </where>
+    </select>
+
+    <!-- 根据id获取物资储备点详情 -->
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, name, level, type, address, lon, lat, volume, tent, generator, unit_head, telephone FROM xian_store_points
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
+</mapper>
