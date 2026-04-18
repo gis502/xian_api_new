@@ -5,11 +5,11 @@ import com.gis.xian.entity.XianHiddenDangerSpots;
 import java.util.List;
 
 /**
-* @author wzy
-* @description 针对表【xian_hidden_danger_spots(地质灾害隐患点)】的数据库操作Mapper
-* @createDate 2026-04-09 16:18:17
-* @Entity com.gis.xian.entity.XianHiddenDangerSpots
-*/
+ * @author wzy
+ * @description 针对表【xian_hidden_danger_spots(地质灾害隐患点)】的数据库操作Mapper
+ * @createDate 2026-04-09 16:18:17
+ * @Entity com.gis.xian.entity.XianHiddenDangerSpots
+ */
 public interface XianHiddenDangerSpotsMapper {
     /**
      * 获取所有基础点：滑坡、泥石流、山洪、内涝

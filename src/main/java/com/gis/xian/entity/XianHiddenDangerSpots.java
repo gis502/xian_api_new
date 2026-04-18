@@ -111,23 +111,23 @@ public class XianHiddenDangerSpots {
         }
         XianHiddenDangerSpots other = (XianHiddenDangerSpots) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-                && (this.getFieldCode() == null ? other.getFieldCode() == null : this.getFieldCode().equals(other.getFieldCode()))
-                && (this.getProvince() == null ? other.getProvince() == null : this.getProvince().equals(other.getProvince()))
-                && (this.getProvinceId() == null ? other.getProvinceId() == null : this.getProvinceId().equals(other.getProvinceId()))
-                && (this.getCity() == null ? other.getCity() == null : this.getCity().equals(other.getCity()))
-                && (this.getCityId() == null ? other.getCityId() == null : this.getCityId().equals(other.getCityId()))
-                && (this.getCounty() == null ? other.getCounty() == null : this.getCounty().equals(other.getCounty()))
-                && (this.getCountyId() == null ? other.getCountyId() == null : this.getCountyId().equals(other.getCountyId()))
-                && (this.getVillage() == null ? other.getVillage() == null : this.getVillage().equals(other.getVillage()))
-                && (this.getDisasterName() == null ? other.getDisasterName() == null : this.getDisasterName().equals(other.getDisasterName()))
-                && (this.getLon() == null ? other.getLon() == null : this.getLon().equals(other.getLon()))
-                && (this.getLat() == null ? other.getLat() == null : this.getLat().equals(other.getLat()))
-                && (this.getGeom() == null ? other.getGeom() == null : this.getGeom().equals(other.getGeom()))
-                && (this.getPosition() == null ? other.getPosition() == null : this.getPosition().equals(other.getPosition()))
-                && (this.getDisasterType() == null ? other.getDisasterType() == null : this.getDisasterType().equals(other.getDisasterType()))
-                && (this.getScaleGrade() == null ? other.getScaleGrade() == null : this.getScaleGrade().equals(other.getScaleGrade()))
-                && (this.getRiskGrade() == null ? other.getRiskGrade() == null : this.getRiskGrade().equals(other.getRiskGrade()))
-                && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()));
+            && (this.getFieldCode() == null ? other.getFieldCode() == null : this.getFieldCode().equals(other.getFieldCode()))
+            && (this.getProvince() == null ? other.getProvince() == null : this.getProvince().equals(other.getProvince()))
+            && (this.getProvinceId() == null ? other.getProvinceId() == null : this.getProvinceId().equals(other.getProvinceId()))
+            && (this.getCity() == null ? other.getCity() == null : this.getCity().equals(other.getCity()))
+            && (this.getCityId() == null ? other.getCityId() == null : this.getCityId().equals(other.getCityId()))
+            && (this.getCounty() == null ? other.getCounty() == null : this.getCounty().equals(other.getCounty()))
+            && (this.getCountyId() == null ? other.getCountyId() == null : this.getCountyId().equals(other.getCountyId()))
+            && (this.getVillage() == null ? other.getVillage() == null : this.getVillage().equals(other.getVillage()))
+            && (this.getDisasterName() == null ? other.getDisasterName() == null : this.getDisasterName().equals(other.getDisasterName()))
+            && (this.getLon() == null ? other.getLon() == null : this.getLon().equals(other.getLon()))
+            && (this.getLat() == null ? other.getLat() == null : this.getLat().equals(other.getLat()))
+            && (this.getGeom() == null ? other.getGeom() == null : this.getGeom().equals(other.getGeom()))
+            && (this.getPosition() == null ? other.getPosition() == null : this.getPosition().equals(other.getPosition()))
+            && (this.getDisasterType() == null ? other.getDisasterType() == null : this.getDisasterType().equals(other.getDisasterType()))
+            && (this.getScaleGrade() == null ? other.getScaleGrade() == null : this.getScaleGrade().equals(other.getScaleGrade()))
+            && (this.getRiskGrade() == null ? other.getRiskGrade() == null : this.getRiskGrade().equals(other.getRiskGrade()))
+            && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()));
     }
 
     @Override
@@ -153,5 +153,33 @@ public class XianHiddenDangerSpots {
         result = prime * result + ((getRiskGrade() == null) ? 0 : getRiskGrade().hashCode());
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
         return result;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", id=").append(id);
+        sb.append(", fieldCode=").append(fieldCode);
+        sb.append(", province=").append(province);
+        sb.append(", provinceId=").append(provinceId);
+        sb.append(", city=").append(city);
+        sb.append(", cityId=").append(cityId);
+        sb.append(", county=").append(county);
+        sb.append(", countyId=").append(countyId);
+        sb.append(", village=").append(village);
+        sb.append(", disasterName=").append(disasterName);
+        sb.append(", lon=").append(lon);
+        sb.append(", lat=").append(lat);
+        sb.append(", geom=").append(geom);
+        sb.append(", position=").append(position);
+        sb.append(", disasterType=").append(disasterType);
+        sb.append(", scaleGrade=").append(scaleGrade);
+        sb.append(", riskGrade=").append(riskGrade);
+        sb.append(", isDelete=").append(isDelete);
+        sb.append("]");
+        return sb.toString();
     }
 }
