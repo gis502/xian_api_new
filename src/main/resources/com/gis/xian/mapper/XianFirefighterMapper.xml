@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianFirefighterMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianFirefighter">
+            <id property="id" column="id" />
+            <result property="teamName" column="team_name" />
+            <result property="teamId" column="team_id" />
+            <result property="teamType" column="team_type" />
+            <result property="fireType" column="fire_type" />
+            <result property="address" column="address" />
+            <result property="standTime" column="stand_time" />
+            <result property="area" column="area" />
+            <result property="structionArea" column="struction_area" />
+            <result property="teamNum" column="team_num" />
+            <result property="leaderNum" column="leader_num" />
+            <result property="techNum" column="tech_num" />
+            <result property="firerNum" column="firer_num" />
+            <result property="averageAge" column="average_age" />
+            <result property="cars" column="cars" />
+            <result property="waterCars" column="water_cars" />
+            <result property="foamCars" column="foam_cars" />
+            <result property="highCars" column="high_cars" />
+            <result property="dedicateCars" column="dedicate_cars" />
+            <result property="devices" column="devices" />
+            <result property="detectionDevice" column="detection_device" />
+            <result property="saveDevice" column="save_device" />
+            <result property="destructionDevice" column="destruction_device" />
+            <result property="fillDevice" column="fill_device" />
+            <result property="transferDevice" column="transfer_device" />
+            <result property="washDevice" column="wash_device" />
+            <result property="lightDevice" column="light_device" />
+            <result property="fireDevice" column="fire_device" />
+            <result property="goOut" column="go_out" />
+            <result property="outPeople" column="out_people" />
+            <result property="outCar" column="out_car" />
+            <result property="reportTime" column="report_time" />
+            <result property="unitHead" column="unit_head" />
+            <result property="governmentCode" column="government_code" />
+            <result property="createTime" column="create_time" />
+            <result property="county" column="county" />
+            <result property="country" column="country" />
+            <result property="village" column="village" />
+            <result property="position" column="position" />
+            <result property="telephone" column="telephone" />
+            <result property="createName" column="create_name" />
+            <result property="city" column="city" />
+            <result property="statisticHead" column="statistic_head" />
+            <result property="street" column="street" />
+            <result property="fillName" column="fill_name" />
+            <result property="province" column="province" />
+            <result property="fxpcDataidSjgl" column="fxpc_dataid_sjgl" />
+            <result property="provinceCode" column="province_code" />
+            <result property="cityCode" column="city_code" />
+            <result property="countyCode" column="county_code" />
+            <result property="updateTime" column="update_time" />
+            <result property="writeTime" column="write_time" />
+            <result property="lon" column="lon" />
+            <result property="lat" column="lat" />
+            <result property="point" column="point" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <!-- 获取所有消防站基础点 -->
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, lon, lat FROM xian_firefighter
+        <where>
+            is_delete = 0
+            <!-- 确定落在西安境内 -->
+            AND ST_Within(point, (SELECT geom FROM xian_district WHERE id = 1))
+        </where>
+    </select>
+
+    <!-- 根据id获取消防站详情 -->
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, team_name, team_type, address, lon, lat, team_num, cars, devices, unit_head, telephone FROM xian_firefighter
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
+</mapper>

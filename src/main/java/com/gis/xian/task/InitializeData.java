@@ -4,11 +4,13 @@ import com.alibaba.fastjson2.JSON;
 import com.gis.xian.enums.DisasterTypeEnum;
 import com.gis.xian.mapper.XianDangerousSourceMapper;
 import com.gis.xian.mapper.XianEmergencyShelterMapper;
+import com.gis.xian.mapper.XianFirefighterMapper;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
 import com.gis.xian.mapper.XianHospitalsMapper;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
 import com.gis.xian.vo.XianDangerousSourceBasePointVo;
 import com.gis.xian.vo.XianEmergencyShelterBasePointVo;
+import com.gis.xian.vo.XianFirefighterBasePointVo;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHospitalsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
@@ -43,6 +45,9 @@ public class InitializeData {
     private XianEmergencyShelterMapper xianEmergencyShelterMapper;
 
     @Resource
+    private XianFirefighterMapper xianFirefighterMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -62,6 +67,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.emergency-shelter}")
     private String emergencyShelterBasePointsKey;
+
+    @Value("${init.data.base-points.firefighter}")
+    private String firefighterBasePointsKey;
 
     @PostConstruct
     @Async("xianPool")
@@ -105,6 +113,13 @@ public class InitializeData {
         redisTemplate.opsForValue().set(emergencyShelterBasePointsKey, JSON.toJSONString(
                 XianEmergencyShelterBasePointVo.entity2Vo(
                     xianEmergencyShelterMapper.getBasePoints())
+                )
+        );
+
+        // 加载消防站基本信息写入redis
+        redisTemplate.opsForValue().set(firefighterBasePointsKey, JSON.toJSONString(
+                XianFirefighterBasePointVo.entity2Vo(
+                    xianFirefighterMapper.getBasePoints())
                 )
         );
         log.info("初始化数据完成");

@@ -17,3 +17,4 @@ init:
       hospitals: 'xian:init:data:base-points:hospitals'
       dangerous-source: 'xian:init:data:base-points:dangerous-source'
       emergency-shelter: 'xian:init:data:base-points:emergency-shelter'
+      firefighter: 'xian:init:data:base-points:firefighter'
