@@ -2,9 +2,11 @@ package com.gis.xian.task;
 
 import com.alibaba.fastjson2.JSON;
 import com.gis.xian.enums.DisasterTypeEnum;
+import com.gis.xian.mapper.XianDangerousSourceMapper;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
 import com.gis.xian.mapper.XianHospitalsMapper;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
+import com.gis.xian.vo.XianDangerousSourceBasePointVo;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHospitalsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
@@ -33,6 +35,9 @@ public class InitializeData {
     private XianHospitalsMapper xianHospitalsMapper;
 
     @Resource
+    private XianDangerousSourceMapper xianDangerousSourceMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -46,6 +51,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.hospitals}")
     private String hospitalsBasePointsKey;
+
+    @Value("${init.data.base-points.dangerous-source}")
+    private String dangerousSourceBasePointsKey;
 
     @PostConstruct
     @Async("xianPool")
@@ -75,6 +83,13 @@ public class InitializeData {
         redisTemplate.opsForValue().set(hospitalsBasePointsKey, JSON.toJSONString(
                 XianHospitalsBasePointVo.entity2Vo(
                     xianHospitalsMapper.getBasePoints())
+                )
+        );
+
+        // 加载危险源基本信息写入redis
+        redisTemplate.opsForValue().set(dangerousSourceBasePointsKey, JSON.toJSONString(
+                XianDangerousSourceBasePointVo.entity2Vo(
+                    xianDangerousSourceMapper.getBasePoints())
                 )
         );
         log.info("初始化数据完成");

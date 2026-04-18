@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianDangerousSourceMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianDangerousSource">
+            <id property="id" column="id" />
+            <result property="name" column="name" />
+            <result property="unitCode" column="unit_code" />
+            <result property="address" column="address" />
+            <result property="isInchemistry" column="is_inchemistry" />
+            <result property="standTime" column="stand_time" />
+            <result property="enterpriseType" column="enterprise_type" />
+            <result property="level" column="level" />
+            <result property="safeProductLevel" column="safe_product_level" />
+            <result property="sumVolume" column="sum_volume" />
+            <result property="tankType" column="tank_type" />
+            <result property="sumVolumeOther1" column="sum_volume_other1" />
+            <result property="sumVolumeOther3" column="sum_volume_other3" />
+            <result property="sumVolumeOther2" column="sum_volume_other2" />
+            <result property="createTime" column="create_time" />
+            <result property="fillName" column="fill_name" />
+            <result property="position" column="position" />
+            <result property="province" column="province" />
+            <result property="city" column="city" />
+            <result property="reportTime" column="report_time" />
+            <result property="telephone" column="telephone" />
+            <result property="county" column="county" />
+            <result property="country" column="country" />
+            <result property="unitHead" column="unit_head" />
+            <result property="createName" column="create_name" />
+            <result property="village" column="village" />
+            <result property="governmentCode" column="government_code" />
+            <result property="street" column="street" />
+            <result property="statisticsHead" column="statistics_head" />
+            <result property="structionCode" column="struction_code" />
+            <result property="physicalKey" column="physical_key" />
+            <result property="provinceCode" column="province_code" />
+            <result property="cityCode" column="city_code" />
+            <result property="countyCode" column="county_code" />
+            <result property="updateTime" column="update_time" />
+            <result property="writeTime" column="write_time" />
+            <result property="lon" column="lon" />
+            <result property="lat" column="lat" />
+            <result property="point" column="point" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <!-- 获取所有危险源基础点 -->
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, lon, lat FROM xian_dangerous_source
+        <where>
+            is_delete = 0
+            <!-- 确定落在西安境内 -->
+            AND ST_Within(point, (SELECT geom FROM xian_district WHERE id = 1))
+        </where>
+    </select>
+
+    <!-- 根据id获取危险源详情 -->
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, name, unit_code, level, enterprise_type, address, lon, lat, unit_head, telephone FROM xian_dangerous_source
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
+</mapper>

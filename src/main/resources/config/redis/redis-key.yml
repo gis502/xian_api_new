@@ -15,3 +15,4 @@ init:
         earthquake: 'xian:init:data:base-points:hidden-danger:earthquake'
       risk: 'xian:init:data:base-points:risk'
       hospitals: 'xian:init:data:base-points:hospitals'
+      dangerous-source: 'xian:init:data:base-points:dangerous-source'
