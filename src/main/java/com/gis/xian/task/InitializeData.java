@@ -16,13 +16,16 @@ import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHospitalsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
 import com.gis.xian.vo.XianStorePointsBasePointVo;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 初始化数据
@@ -79,64 +82,89 @@ public class InitializeData {
     @Value("${init.data.base-points.store-points}")
     private String storePointsBasePointsKey;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     @Async("xianPool")
     public void init() {
         log.info("开始初始化数据");
+        // 并行执行所有数据库查询和Redis写入
+        CompletableFuture<Void> rainstormFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType()))
+                    )
+            );
+            log.info("加载暴雨隐患点信息并写入redis完成");
+        });
 
-        // 加载滑坡、泥石流、山洪、内涝隐患点信息并写入redis
-        redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(
-                XianHiddenDangerSpotsBasePointVo.entity2Vo(
-                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType()))
-                )
-        );
-        redisTemplate.opsForValue().set(earthquakeBasePointsKey, JSON.toJSONString(
-                XianHiddenDangerSpotsBasePointVo.entity2Vo(
-                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType()))
-                )
-        );
+        CompletableFuture<Void> earthquakeFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(earthquakeBasePointsKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType()))
+                    )
+            );
+            log.info("加载地震隐患点信息并写入redis完成");
+        });
 
-        // 加载风险点基本信息写入redis
-        redisTemplate.opsForValue().set(riskBasePointsKey, JSON.toJSONString(
-                XianRiskSpotsBasePointVo.entity2Vo(
-                    xianRiskSpotsMapper.getBasePoints())
-                )
-        );
+        CompletableFuture<Void> riskFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(riskBasePointsKey, JSON.toJSONString(
+                            XianRiskSpotsBasePointVo.entity2Vo(
+                                    xianRiskSpotsMapper.getBasePoints())
+                    )
+            );
+            log.info("加载风险点基本信息写入redis完成");
+        });
 
-        // 加载医院基本信息写入redis
-        redisTemplate.opsForValue().set(hospitalsBasePointsKey, JSON.toJSONString(
-                XianHospitalsBasePointVo.entity2Vo(
-                    xianHospitalsMapper.getBasePoints())
-                )
-        );
+        CompletableFuture<Void> hospitalsFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(hospitalsBasePointsKey, JSON.toJSONString(
+                            XianHospitalsBasePointVo.entity2Vo(
+                                    xianHospitalsMapper.getBasePoints())
+                    )
+            );
+            log.info("加载医院基本信息写入redis完成");
+        });
 
-        // 加载危险源基本信息写入redis
-        redisTemplate.opsForValue().set(dangerousSourceBasePointsKey, JSON.toJSONString(
-                XianDangerousSourceBasePointVo.entity2Vo(
-                    xianDangerousSourceMapper.getBasePoints())
-                )
-        );
+        CompletableFuture<Void> dangerousSourceFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(dangerousSourceBasePointsKey, JSON.toJSONString(
+                            XianDangerousSourceBasePointVo.entity2Vo(
+                                    xianDangerousSourceMapper.getBasePoints())
+                    )
+            );
+            log.info("加载危险源基本信息写入redis完成");
+        });
 
-        // 加载应急避难所基本信息写入redis
-        redisTemplate.opsForValue().set(emergencyShelterBasePointsKey, JSON.toJSONString(
-                XianEmergencyShelterBasePointVo.entity2Vo(
-                    xianEmergencyShelterMapper.getBasePoints())
-                )
-        );
+        CompletableFuture<Void> emergencyShelterFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(emergencyShelterBasePointsKey, JSON.toJSONString(
+                            XianEmergencyShelterBasePointVo.entity2Vo(
+                                    xianEmergencyShelterMapper.getBasePoints())
+                    )
+            );
+            log.info("加载应急避难所基本信息写入redis完成");
+        });
 
-        // 加载消防站基本信息写入redis
-        redisTemplate.opsForValue().set(firefighterBasePointsKey, JSON.toJSONString(
-                XianFirefighterBasePointVo.entity2Vo(
-                    xianFirefighterMapper.getBasePoints())
-                )
-        );
+        CompletableFuture<Void> firefighterFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(firefighterBasePointsKey, JSON.toJSONString(
+                            XianFirefighterBasePointVo.entity2Vo(
+                                    xianFirefighterMapper.getBasePoints())
+                    )
+            );
+            log.info("加载消防站基本信息写入redis完成");
+        });
 
-        // 加载物资储备点基本信息写入redis
-        redisTemplate.opsForValue().set(storePointsBasePointsKey, JSON.toJSONString(
-                XianStorePointsBasePointVo.entity2Vo(
-                    xianStorePointsMapper.getBasePoints())
-                )
-        );
+        CompletableFuture<Void> storePointsFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(storePointsBasePointsKey, JSON.toJSONString(
+                            XianStorePointsBasePointVo.entity2Vo(
+                                    xianStorePointsMapper.getBasePoints())
+                    )
+            );
+            log.info("加载物资储备点基本信息写入redis完成");
+        });
+
+        // 等待所有任务完成
+        CompletableFuture.allOf(
+                rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
+                dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture
+        ).join();
+
         log.info("初始化数据完成");
     }
 }
