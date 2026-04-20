@@ -75,8 +75,6 @@
         SELECT id, lon, lat FROM xian_hospitals
         <where>
             is_delete = 0
-            <!-- 确定落在西安境内 -->
-            AND ST_Within(point, (SELECT geom FROM xian_district WHERE id = 1))
         </where>
     </select>
 
