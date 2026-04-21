@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianSchoolMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianSchool">
+            <id property="id" column="id" />
+            <result property="schoolName" column="school_name" />
+            <result property="schoolAddress" column="school_address" />
+            <result property="schoolCode" column="school_code" />
+            <result property="schoolType" column="school_type" />
+            <result property="schoolCreater" column="school_creater" />
+            <result property="area" column="area" />
+            <result property="constructionArea" column="construction_area" />
+            <result property="devices" column="devices" />
+            <result property="isImportant" column="is_important" />
+            <result property="staff" column="staff" />
+            <result property="students" column="students" />
+            <result property="boarder" column="boarder" />
+            <result property="foreignStudents" column="foreign_students" />
+            <result property="classrooms" column="classrooms" />
+            <result property="shelterArea" column="shelter_area" />
+            <result property="isHaveHospital" column="is_have_hospital" />
+            <result property="doctorNum" column="doctor_num" />
+            <result property="securityStaffNum" column="security_staff_num" />
+            <result property="emergencyElectric" column="emergency_electric" />
+            <result property="waterMethod" column="water_method" />
+            <result property="heatingMethod" column="heating_method" />
+            <result property="emergencyConnectionMethod" column="emergency_connection_method" />
+            <result property="isDisasterType" column="is_disaster_type" />
+            <result property="haveEmergencyPlanType" column="have_emergency_plan_type" />
+            <result property="institutionCode" column="institution_code" />
+            <result property="createTime" column="create_time" />
+            <result property="city" column="city" />
+            <result property="county" column="county" />
+            <result property="telephone" column="telephone" />
+            <result property="code" column="code" />
+            <result property="unitHead" column="unit_head" />
+            <result property="country" column="country" />
+            <result property="fillName" column="fill_name" />
+            <result property="createName" column="create_name" />
+            <result property="province" column="province" />
+            <result property="statisticsHead" column="statistics_head" />
+            <result property="reportTime" column="report_time" />
+            <result property="physicalKey" column="physical_key" />
+            <result property="provinceCode" column="province_code" />
+            <result property="cityCode" column="city_code" />
+            <result property="countyCode" column="county_code" />
+            <result property="updateTime" column="update_time" />
+            <result property="writeTime" column="write_time" />
+            <result property="geom" column="geom" />
+            <result property="lon" column="lon" />
+            <result property="lat" column="lat" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <!-- 获取所有学校基础点 -->
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, lon, lat FROM xian_school
+        <where>
+            is_delete = 0
+        </where>
+    </select>
+
+    <!-- 根据id获取学校详情 -->
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, school_name, school_type, lon, lat, students, is_important, unit_head, telephone FROM xian_school
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
+</mapper>

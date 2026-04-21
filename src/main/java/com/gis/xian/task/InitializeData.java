@@ -8,6 +8,7 @@ import com.gis.xian.mapper.XianFirefighterMapper;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
 import com.gis.xian.mapper.XianHospitalsMapper;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
+import com.gis.xian.mapper.XianSchoolMapper;
 import com.gis.xian.mapper.XianStorePointsMapper;
 import com.gis.xian.vo.XianDangerousSourceBasePointVo;
 import com.gis.xian.vo.XianEmergencyShelterBasePointVo;
@@ -15,6 +16,7 @@ import com.gis.xian.vo.XianFirefighterBasePointVo;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHospitalsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
+import com.gis.xian.vo.XianSchoolBasePointVo;
 import com.gis.xian.vo.XianStorePointsBasePointVo;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +58,9 @@ public class InitializeData {
     private XianStorePointsMapper xianStorePointsMapper;
 
     @Resource
+    private XianSchoolMapper xianSchoolMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -81,6 +86,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.store-points}")
     private String storePointsBasePointsKey;
+
+    @Value("${init.data.base-points.school}")
+    private String schoolBasePointsKey;
 
     @EventListener(ApplicationReadyEvent.class)
     @Async("xianPool")
@@ -159,10 +167,19 @@ public class InitializeData {
             log.info("加载物资储备点基本信息写入redis完成");
         });
 
+        CompletableFuture<Void> schoolFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(schoolBasePointsKey, JSON.toJSONString(
+                            XianSchoolBasePointVo.entity2Vo(
+                                    xianSchoolMapper.getBasePoints())
+                    )
+            );
+            log.info("加载学校基本信息写入redis完成");
+        });
+
         // 等待所有任务完成
         CompletableFuture.allOf(
                 rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
-                dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture
+                dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture
         ).join();
 
         log.info("初始化数据完成");

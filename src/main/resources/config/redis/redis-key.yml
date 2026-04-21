@@ -19,3 +19,4 @@ init:
       emergency-shelter: 'xian:init:data:base-points:emergency-shelter'
       firefighter: 'xian:init:data:base-points:firefighter'
       store-points: 'xian:init:data:base-points:store-points'
+      school: 'xian:init:data:base-points:school'
