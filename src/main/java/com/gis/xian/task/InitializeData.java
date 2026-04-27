@@ -53,6 +53,9 @@ public class InitializeData {
     private XianReservoirListMapper xianReservoirListMapper;
 
     @Resource
+    private XianSubwayStationsMapper xianSubwayStationsMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -87,6 +90,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.reservoir}")
     private String reservoirBasePointsKey;
+
+    @Value("${init.data.base-points.subway}")
+    private String subwayBasePointsKey;
 
     @EventListener(ApplicationReadyEvent.class)
     @Async("xianPool")
@@ -192,11 +198,20 @@ public class InitializeData {
             log.info("加载水库基本信息写入redis完成");
         });
 
+        CompletableFuture<Void> subwayFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(subwayBasePointsKey, JSON.toJSONString(
+                            XianSubwayStationsBasePointVo.entity2Vo(
+                                    xianSubwayStationsMapper.getBasePoints())
+                    )
+            );
+            log.info("加载地铁站点基本信息写入redis完成");
+        });
+
         // 等待所有任务完成
         CompletableFuture.allOf(
                 rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
                 dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture,
-                bridgeFuture, reservoirFuture
+                bridgeFuture, reservoirFuture, subwayFuture
         ).join();
 
         log.info("初始化数据完成");

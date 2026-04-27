@@ -22,3 +22,4 @@ init:
       school: 'xian:init:data:base-points:school'
       bridge: 'xian:init:data:base-points:bridge'
       reservoir: 'xian:init:data:base-points:reservoir'
+      subway: 'xian:init:data:base-points:subway'
