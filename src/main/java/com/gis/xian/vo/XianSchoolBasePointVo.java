@@ -24,6 +24,11 @@ public class XianSchoolBasePointVo {
     private String schoolName;
 
     /**
+     * 通用名称字段（用于统一访问）
+     */
+    private String name;
+
+    /**
      * 经度
      */
     private Double lon;
@@ -37,6 +42,7 @@ public class XianSchoolBasePointVo {
         XianSchoolBasePointVo vo = new XianSchoolBasePointVo();
         vo.setId(entity.getId());
         vo.setSchoolName(entity.getSchoolName());
+        vo.setName(entity.getSchoolName()); // 设置通用name字段
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         return vo;
@@ -55,11 +61,11 @@ public class XianSchoolBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianSchoolBasePointVo that = (XianSchoolBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(schoolName, that.schoolName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(schoolName, that.schoolName) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, schoolName, lon, lat);
+        return Objects.hash(id, schoolName, name, lon, lat);
     }
 }

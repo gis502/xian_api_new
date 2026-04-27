@@ -24,6 +24,11 @@ public class XianBridgeBasePointVo {
     private String bridgeName;
 
     /**
+     * 通用名称字段（用于统一访问）
+     */
+    private String name;
+
+    /**
      * 经度
      */
     private Double lon;
@@ -37,17 +42,18 @@ public class XianBridgeBasePointVo {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         XianBridgeBasePointVo that = (XianBridgeBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(bridgeName, that.bridgeName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(bridgeName, that.bridgeName) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, bridgeName, lon, lat);
+        return Objects.hash(id, bridgeName, name, lon, lat);
     }
     public static XianBridgeBasePointVo entity2Vo(XianBridge entity) {
         XianBridgeBasePointVo vo = new XianBridgeBasePointVo();
         vo.setId(entity.getId());
         vo.setBridgeName(entity.getBridgeName());
+        vo.setName(entity.getBridgeName()); // 设置通用name字段
         vo.setLon(entity.getLon() != null ? entity.getLon().doubleValue() : null);
         vo.setLat(entity.getLat() != null ? entity.getLat().doubleValue() : null);
         return vo;

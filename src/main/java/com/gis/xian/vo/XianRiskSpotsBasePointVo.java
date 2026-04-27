@@ -20,6 +20,11 @@ public class XianRiskSpotsBasePointVo {
     private String riskName;
 
     /**
+     * 通用名称字段（用于统一访问）
+     */
+    private String name;
+
+    /**
      * 经度
      */
     private Double lon;
@@ -33,6 +38,7 @@ public class XianRiskSpotsBasePointVo {
         XianRiskSpotsBasePointVo vo = new XianRiskSpotsBasePointVo();
         vo.setId(entity.getId());
         vo.setRiskName(entity.getRiskName());
+        vo.setName(entity.getRiskName()); // 设置通用name字段
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         return vo;
@@ -51,11 +57,11 @@ public class XianRiskSpotsBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianRiskSpotsBasePointVo that = (XianRiskSpotsBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(riskName, that.riskName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(riskName, that.riskName) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, riskName, lon, lat);
+        return Objects.hash(id, riskName, name, lon, lat);
     }
 }

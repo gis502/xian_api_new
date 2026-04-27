@@ -24,6 +24,11 @@ public class XianSubwayStationsBasePointVo {
     private String stationName;
 
     /**
+     * 通用名称字段（用于统一访问）
+     */
+    private String name;
+
+    /**
      * 经度
      */
     private Double lon;
@@ -37,6 +42,7 @@ public class XianSubwayStationsBasePointVo {
         XianSubwayStationsBasePointVo vo = new XianSubwayStationsBasePointVo();
         vo.setId(entity.getId());
         vo.setStationName(entity.getStationName());
+        vo.setName(entity.getStationName()); // 设置通用name字段
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         return vo;
@@ -55,12 +61,12 @@ public class XianSubwayStationsBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianSubwayStationsBasePointVo that = (XianSubwayStationsBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(stationName, that.stationName) 
+        return Objects.equals(id, that.id) && Objects.equals(stationName, that.stationName) && Objects.equals(name, that.name)
                 && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, stationName, lon, lat);
+        return Objects.hash(id, stationName, name, lon, lat);
     }
 }

@@ -22,6 +22,11 @@ public class XianFirefighterBasePointVo {
      */
     private String teamName;
 
+    /**
+     * 通用名称字段（用于统一访问）
+     */
+    private String name;
+
 
     /**
      * 经度
@@ -37,6 +42,7 @@ public class XianFirefighterBasePointVo {
         XianFirefighterBasePointVo vo = new XianFirefighterBasePointVo();
         vo.setId(entity.getId());
         vo.setTeamName(entity.getTeamName());
+        vo.setName(entity.getTeamName()); // 设置通用name字段
         vo.setLon(entity.getLon() != null ? entity.getLon().doubleValue() : null);
         vo.setLat(entity.getLat() != null ? entity.getLat().doubleValue() : null);
         return vo;
@@ -55,11 +61,11 @@ public class XianFirefighterBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianFirefighterBasePointVo that = (XianFirefighterBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(teamName, that.teamName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(teamName, that.teamName) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, teamName,lon, lat);
+        return Objects.hash(id, teamName, name, lon, lat);
     }
 }

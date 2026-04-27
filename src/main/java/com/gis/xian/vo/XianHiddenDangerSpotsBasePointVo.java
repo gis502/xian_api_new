@@ -22,6 +22,11 @@ public class XianHiddenDangerSpotsBasePointVo {
      * 灾害点名称
      */
     private String disasterName;
+
+    /**
+     * 通用名称字段（用于统一访问）
+     */
+    private String name;
     /**
      * 经度
      */
@@ -36,6 +41,7 @@ public class XianHiddenDangerSpotsBasePointVo {
         XianHiddenDangerSpotsBasePointVo vo = new XianHiddenDangerSpotsBasePointVo();
         vo.setId(entity.getId());
         vo.setDisasterName(entity.getDisasterName());
+        vo.setName(entity.getDisasterName()); // 设置通用name字段
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         vo.setDisasterType(entity.getDisasterType());
@@ -60,11 +66,11 @@ public class XianHiddenDangerSpotsBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianHiddenDangerSpotsBasePointVo that = (XianHiddenDangerSpotsBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(disasterName, that.disasterName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat) && Objects.equals(disasterType, that.disasterType);
+        return Objects.equals(id, that.id) && Objects.equals(disasterName, that.disasterName) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat) && Objects.equals(disasterType, that.disasterType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, disasterName, lon, lat, disasterType);
+        return Objects.hash(id, disasterName, name, lon, lat, disasterType);
     }
 }
