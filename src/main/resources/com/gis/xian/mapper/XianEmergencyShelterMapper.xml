@@ -23,7 +23,7 @@
 
     <!-- 获取所有应急避难所基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, lon, lat FROM xian_emergency_shelter
+        SELECT id, name, lon, lat FROM xian_emergency_shelter
         <where>
             is_delete = 0
         </where>

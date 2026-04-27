@@ -27,7 +27,7 @@
 
     <!-- 获取所有基础点：滑坡、泥石流、山洪、内涝 -->
     <select id="getBasePoints" resultMap="XianHiddenDangerSpotsResultMap">
-        SELECT id, lon, lat, disaster_type FROM xian_hidden_danger_spots
+        SELECT id, disaster_name, lon, lat, disaster_type FROM xian_hidden_danger_spots
         <where>
             <choose>
                 <when test='disasterType == "rainstorm"'>

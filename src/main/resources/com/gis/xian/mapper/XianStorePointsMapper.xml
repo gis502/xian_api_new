@@ -59,7 +59,7 @@
 
     <!-- 获取所有物资储备点基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, lon, lat FROM xian_store_points
+        SELECT id, name, lon, lat FROM xian_store_points
         <where>
             is_delete = 0
         </where>

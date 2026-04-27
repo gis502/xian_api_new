@@ -65,7 +65,7 @@
 
     <!-- 获取所有消防站基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, lon, lat FROM xian_firefighter
+        SELECT id, team_name, lon, lat FROM xian_firefighter
         <where>
             is_delete = 0
         </where>

@@ -31,7 +31,7 @@
 
     <!-- 获取所有风险点基础信息 -->
     <select id="getBasePoints" resultMap="XianRiskSpotsResultMap">
-        SELECT id, lon, lat FROM xian_risk_spots
+        SELECT id, risk_name, lon, lat FROM xian_risk_spots
         <where>
             is_delete = 0
         </where>

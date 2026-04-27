@@ -17,7 +17,10 @@ public class XianDangerousSourceBasePointVo {
      * id
      */
     private Long id;
-
+    /**
+     * 企业名称
+     */
+    private String name;
     /**
      * 经度
      */
@@ -31,6 +34,7 @@ public class XianDangerousSourceBasePointVo {
     public static XianDangerousSourceBasePointVo entity2Vo(XianDangerousSource entity) {
         XianDangerousSourceBasePointVo vo = new XianDangerousSourceBasePointVo();
         vo.setId(entity.getId());
+        vo.setName(entity.getName());
         vo.setLon(entity.getLon() != null ? entity.getLon().doubleValue() : null);
         vo.setLat(entity.getLat() != null ? entity.getLat().doubleValue() : null);
         return vo;
@@ -49,11 +53,11 @@ public class XianDangerousSourceBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianDangerousSourceBasePointVo that = (XianDangerousSourceBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lon, lat);
+        return Objects.hash(id, name, lon, lat);
     }
 }

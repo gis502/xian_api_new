@@ -15,6 +15,11 @@ public class XianRiskSpotsBasePointVo {
     private Long id;
 
     /**
+     * 风险点名称
+     */
+    private String riskName;
+
+    /**
      * 经度
      */
     private Double lon;
@@ -27,6 +32,7 @@ public class XianRiskSpotsBasePointVo {
     public static XianRiskSpotsBasePointVo entity2Vo(XianRiskSpots entity) {
         XianRiskSpotsBasePointVo vo = new XianRiskSpotsBasePointVo();
         vo.setId(entity.getId());
+        vo.setRiskName(entity.getRiskName());
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         return vo;
@@ -45,11 +51,11 @@ public class XianRiskSpotsBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianRiskSpotsBasePointVo that = (XianRiskSpotsBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(riskName, that.riskName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lon, lat);
+        return Objects.hash(id, riskName, lon, lat);
     }
 }

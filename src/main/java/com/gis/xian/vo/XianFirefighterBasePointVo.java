@@ -17,6 +17,11 @@ public class XianFirefighterBasePointVo {
      * id
      */
     private Long id;
+    /**
+     * 队伍名称
+     */
+    private String teamName;
+
 
     /**
      * 经度
@@ -31,6 +36,7 @@ public class XianFirefighterBasePointVo {
     public static XianFirefighterBasePointVo entity2Vo(XianFirefighter entity) {
         XianFirefighterBasePointVo vo = new XianFirefighterBasePointVo();
         vo.setId(entity.getId());
+        vo.setTeamName(entity.getTeamName());
         vo.setLon(entity.getLon() != null ? entity.getLon().doubleValue() : null);
         vo.setLat(entity.getLat() != null ? entity.getLat().doubleValue() : null);
         return vo;
@@ -49,11 +55,11 @@ public class XianFirefighterBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianFirefighterBasePointVo that = (XianFirefighterBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(teamName, that.teamName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lon, lat);
+        return Objects.hash(id, teamName,lon, lat);
     }
 }

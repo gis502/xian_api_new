@@ -19,6 +19,10 @@ public class XianHiddenDangerSpotsBasePointVo {
     private Long id;
 
     /**
+     * 灾害点名称
+     */
+    private String disasterName;
+    /**
      * 经度
      */
     private Double lon;
@@ -31,6 +35,7 @@ public class XianHiddenDangerSpotsBasePointVo {
     public static XianHiddenDangerSpotsBasePointVo entity2Vo(XianHiddenDangerSpots entity) {
         XianHiddenDangerSpotsBasePointVo vo = new XianHiddenDangerSpotsBasePointVo();
         vo.setId(entity.getId());
+        vo.setDisasterName(entity.getDisasterName());
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         vo.setDisasterType(entity.getDisasterType());
@@ -55,11 +60,11 @@ public class XianHiddenDangerSpotsBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianHiddenDangerSpotsBasePointVo that = (XianHiddenDangerSpotsBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat) && Objects.equals(disasterType, that.disasterType);
+        return Objects.equals(id, that.id) && Objects.equals(disasterName, that.disasterName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat) && Objects.equals(disasterType, that.disasterType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lon, lat, disasterType);
+        return Objects.hash(id, disasterName, lon, lat, disasterType);
     }
 }

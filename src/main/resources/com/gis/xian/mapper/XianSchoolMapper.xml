@@ -57,7 +57,7 @@
 
     <!-- 获取所有学校基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, lon, lat FROM xian_school
+        SELECT id, school_name, lon, lat FROM xian_school
         <where>
             is_delete = 0
         </where>

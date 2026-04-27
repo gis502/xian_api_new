@@ -72,7 +72,7 @@
 
     <!-- 获取所有医院基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, lon, lat FROM xian_hospitals
+        SELECT id, name, lon, lat FROM xian_hospitals
         <where>
             is_delete = 0
         </where>

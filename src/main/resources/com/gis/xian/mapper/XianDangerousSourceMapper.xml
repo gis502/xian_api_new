@@ -49,7 +49,7 @@
 
     <!-- 获取所有危险源基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, lon, lat FROM xian_dangerous_source
+        SELECT id, name, lon, lat FROM xian_dangerous_source
         <where>
             is_delete = 0
         </where>

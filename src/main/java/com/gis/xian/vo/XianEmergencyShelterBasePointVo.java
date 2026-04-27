@@ -17,6 +17,11 @@ public class XianEmergencyShelterBasePointVo {
      * id
      */
     private Long id;
+    /**
+     * 避难所名字
+     */
+    private String name;
+
 
     /**
      * 经度
@@ -31,6 +36,7 @@ public class XianEmergencyShelterBasePointVo {
     public static XianEmergencyShelterBasePointVo entity2Vo(XianEmergencyShelter entity) {
         XianEmergencyShelterBasePointVo vo = new XianEmergencyShelterBasePointVo();
         vo.setId(entity.getId());
+        vo.setName(entity.getName());
         vo.setLon(entity.getLon() != null ? entity.getLon().doubleValue() : null);
         vo.setLat(entity.getLat() != null ? entity.getLat().doubleValue() : null);
         return vo;
@@ -49,11 +55,11 @@ public class XianEmergencyShelterBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianEmergencyShelterBasePointVo that = (XianEmergencyShelterBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lon, lat);
+        return Objects.hash(id, name, lon, lat);
     }
 }

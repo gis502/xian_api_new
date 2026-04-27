@@ -19,6 +19,11 @@ public class XianSchoolBasePointVo {
     private Long id;
 
     /**
+     * 学校名称
+     */
+    private String schoolName;
+
+    /**
      * 经度
      */
     private Double lon;
@@ -31,6 +36,7 @@ public class XianSchoolBasePointVo {
     public static XianSchoolBasePointVo entity2Vo(XianSchool entity) {
         XianSchoolBasePointVo vo = new XianSchoolBasePointVo();
         vo.setId(entity.getId());
+        vo.setSchoolName(entity.getSchoolName());
         vo.setLon(entity.getLon());
         vo.setLat(entity.getLat());
         return vo;
@@ -49,11 +55,11 @@ public class XianSchoolBasePointVo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         XianSchoolBasePointVo that = (XianSchoolBasePointVo) o;
-        return Objects.equals(id, that.id) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
+        return Objects.equals(id, that.id) && Objects.equals(schoolName, that.schoolName) && Objects.equals(lon, that.lon) && Objects.equals(lat, that.lat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lon, lat);
+        return Objects.hash(id, schoolName, lon, lat);
     }
 }
