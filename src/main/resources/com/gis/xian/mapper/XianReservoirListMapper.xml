@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianReservoirListMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianReservoirList">
+            <id property="id" column="id" />
+            <result property="adminCode" column="admin_code" />
+            <result property="reservoirName" column="reservoir_name" />
+            <result property="location" column="location" />
+            <result property="safetyStatus" column="safety_status" />
+            <result property="safetyAssessTime" column="safety_assess_time" />
+            <result property="safetyAssessResult" column="safety_assess_result" />
+            <result property="reinforceInfo" column="reinforce_info" />
+            <result property="netFloodCapacity" column="net_flood_capacity" />
+            <result property="projectScale" column="project_scale" />
+            <result property="hasHiddenDanger" column="has_hidden_danger" />
+            <result property="note1" column="note1" />
+            <result property="lon" column="longitude" />
+            <result property="lat" column="latitude" />
+            <result property="geom" column="geom" />
+            <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <!-- 获取所有水库基础点 -->
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, reservoir_name, longitude, latitude FROM xian_reservoir_list
+        <where>
+            is_delete = 0
+        </where>
+    </select>
+
+    <!-- 根据id获取水库详情 -->
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, reservoir_name, location, safety_assess_result, longitude, latitude FROM xian_reservoir_list
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
+</mapper>

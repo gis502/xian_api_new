@@ -21,3 +21,4 @@ init:
       store-points: 'xian:init:data:base-points:store-points'
       school: 'xian:init:data:base-points:school'
       bridge: 'xian:init:data:base-points:bridge'
+      reservoir: 'xian:init:data:base-points:reservoir'
