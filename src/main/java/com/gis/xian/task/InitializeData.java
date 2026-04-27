@@ -2,22 +2,8 @@ package com.gis.xian.task;
 
 import com.alibaba.fastjson2.JSON;
 import com.gis.xian.enums.DisasterTypeEnum;
-import com.gis.xian.mapper.XianDangerousSourceMapper;
-import com.gis.xian.mapper.XianEmergencyShelterMapper;
-import com.gis.xian.mapper.XianFirefighterMapper;
-import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
-import com.gis.xian.mapper.XianHospitalsMapper;
-import com.gis.xian.mapper.XianRiskSpotsMapper;
-import com.gis.xian.mapper.XianSchoolMapper;
-import com.gis.xian.mapper.XianStorePointsMapper;
-import com.gis.xian.vo.XianDangerousSourceBasePointVo;
-import com.gis.xian.vo.XianEmergencyShelterBasePointVo;
-import com.gis.xian.vo.XianFirefighterBasePointVo;
-import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
-import com.gis.xian.vo.XianHospitalsBasePointVo;
-import com.gis.xian.vo.XianRiskSpotsBasePointVo;
-import com.gis.xian.vo.XianSchoolBasePointVo;
-import com.gis.xian.vo.XianStorePointsBasePointVo;
+import com.gis.xian.mapper.*;
+import com.gis.xian.vo.*;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +47,9 @@ public class InitializeData {
     private XianSchoolMapper xianSchoolMapper;
 
     @Resource
+    private XianBridgeMapper xianBridgeMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
@@ -89,6 +78,9 @@ public class InitializeData {
 
     @Value("${init.data.base-points.school}")
     private String schoolBasePointsKey;
+
+    @Value("${init.data.base-points.bridge}")
+    private String bridgeBasePointsKey;
 
     @EventListener(ApplicationReadyEvent.class)
     @Async("xianPool")
@@ -176,10 +168,20 @@ public class InitializeData {
             log.info("加载学校基本信息写入redis完成");
         });
 
+        CompletableFuture<Void> bridgeFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(bridgeBasePointsKey, JSON.toJSONString(
+                            XianBridgeBasePointVo.entity2Vo(
+                                    xianBridgeMapper.getBasePoints())
+                    )
+            );
+            log.info("加载桥梁基本信息写入redis完成");
+        });
+
         // 等待所有任务完成
         CompletableFuture.allOf(
                 rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
-                dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture
+                dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture,
+                bridgeFuture
         ).join();
 
         log.info("初始化数据完成");

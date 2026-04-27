@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianBridgeMapper">
+
+    <resultMap id="BaseResultMap" type="com.gis.xian.entity.XianBridge">
+        <id property="id" column="id" />
+        <result property="region" column="region" />
+        <result property="bridgeName" column="bridge_name" />
+        <result property="lon" column="lon" />
+        <result property="lat" column="lat" />
+        <result property="location" column="location" />
+        <result property="buildTime" column="build_time" />
+        <result property="bridgeType" column="bridge_type" />
+        <result property="maintainType" column="maintain_type" />
+        <result property="techType" column="tech_type" />
+        <result property="scale" column="scale" />
+        <result property="area" column="area" />
+        <result property="master" column="master" />
+        <result property="maint" column="maint" />
+        <result property="note" column="note" />
+        <result property="point" column="point" />
+        <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+
+    <select id="getBasePoints" resultMap="BaseResultMap">
+        SELECT id, bridge_name, lon, lat FROM xian_bridge
+        <where>
+            is_delete = 0
+        </where>
+    </select>
+    <select id="getPointDetailById" resultMap="BaseResultMap">
+        SELECT id, bridge_name, lon, lat, bridge_type, tech_type  FROM xian_bridge
+        <where>
+            id = #{id} AND is_delete = 0
+        </where>
+    </select>
+</mapper>
