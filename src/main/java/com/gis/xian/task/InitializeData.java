@@ -61,8 +61,26 @@ public class InitializeData {
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
     private String rainstormBasePointsKey;
 
+    @Value("${init.data.base-points.hidden-danger.rainstorm-landslide}")
+    private String rainstormLandslideKey;
+
+    @Value("${init.data.base-points.hidden-danger.rainstorm-debris-flow}")
+    private String rainstormDebrisFlowKey;
+
+    @Value("${init.data.base-points.hidden-danger.rainstorm-flash-flood}")
+    private String rainstormMountainFloodKey;
+
+    @Value("${init.data.base-points.hidden-danger.rainstorm-water-logging}")
+    private String rainstormWaterLoggingKey;
+
     @Value("${init.data.base-points.hidden-danger.earthquake}")
     private String earthquakeBasePointsKey;
+
+    @Value("${init.data.base-points.hidden-danger.earthquake-landslide}")
+    private String earthquakeLandslideKey;
+
+    @Value("${init.data.base-points.hidden-danger.earthquake-debris-flow}")
+    private String earthquakeDebrisFlowKey;
 
     @Value("${init.data.base-points.risk}")
     private String riskBasePointsKey;
@@ -99,22 +117,85 @@ public class InitializeData {
     public void init() {
         log.info("开始初始化数据");
         // 并行执行所有数据库查询和Redis写入
+        
+        // 暴雨类隐患点 - 总体
         CompletableFuture<Void> rainstormFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(
                             XianHiddenDangerSpotsBasePointVo.entity2Vo(
-                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType()))
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType(), null))
                     )
             );
-            log.info("加载暴雨隐患点信息并写入redis完成");
+            log.info("加载暴雨隐患点信息（总体）并写入redis完成");
+        });
+        
+        // 暴雨类隐患点 - 滑坡
+        CompletableFuture<Void> rainstormLandslideFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(rainstormLandslideKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType(), "landslide"))
+                    )
+            );
+            log.info("加载暴雨隐患点信息（滑坡）并写入redis完成");
+        });
+        
+        // 暴雨类隐患点 - 泥石流
+        CompletableFuture<Void> rainstormDebrisFlowFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(rainstormDebrisFlowKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType(), "debris_flow"))
+                    )
+            );
+            log.info("加载暴雨隐患点信息（泥石流）并写入redis完成");
+        });
+        
+        // 暴雨类隐患点 - 山洪
+        CompletableFuture<Void> rainstormMountainFloodFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(rainstormMountainFloodKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType(), "flash_flood"))
+                    )
+            );
+            log.info("加载暴雨隐患点信息（山洪）并写入redis完成");
+        });
+        
+        // 暴雨类隐患点 - 内涝
+        CompletableFuture<Void> rainstormWaterLoggingFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(rainstormWaterLoggingKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.RAINSTORM.getType(), "water_logging"))
+                    )
+            );
+            log.info("加载暴雨隐患点信息（内涝）并写入redis完成");
         });
 
+        // 地震类隐患点 - 总体
         CompletableFuture<Void> earthquakeFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(earthquakeBasePointsKey, JSON.toJSONString(
                             XianHiddenDangerSpotsBasePointVo.entity2Vo(
-                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType()))
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType(), null))
                     )
             );
-            log.info("加载地震隐患点信息并写入redis完成");
+            log.info("加载地震隐患点信息（总体）并写入redis完成");
+        });
+        
+        // 地震类隐患点 - 滑坡
+        CompletableFuture<Void> earthquakeLandslideFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(earthquakeLandslideKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType(), "landslide"))
+                    )
+            );
+            log.info("加载地震隐患点信息（滑坡）并写入redis完成");
+        });
+        
+        // 地震类隐患点 - 泥石流
+        CompletableFuture<Void> earthquakeDebrisFlowFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(earthquakeDebrisFlowKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints(DisasterTypeEnum.EARTHQUAKE.getType(), "debris_flow"))
+                    )
+            );
+            log.info("加载地震隐患点信息（泥石流）并写入redis完成");
         });
 
         CompletableFuture<Void> riskFuture = CompletableFuture.runAsync(() -> {
@@ -209,7 +290,10 @@ public class InitializeData {
 
         // 等待所有任务完成
         CompletableFuture.allOf(
-                rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
+                rainstormFuture, rainstormLandslideFuture, rainstormDebrisFlowFuture,
+                rainstormMountainFloodFuture, rainstormWaterLoggingFuture,
+                earthquakeFuture, earthquakeLandslideFuture, earthquakeDebrisFlowFuture,
+                riskFuture, hospitalsFuture,
                 dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture,
                 bridgeFuture, reservoirFuture, subwayFuture
         ).join();

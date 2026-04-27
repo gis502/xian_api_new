@@ -12,7 +12,13 @@ init:
     base-points:
       hidden-danger:
         rainstorm: 'xian:init:data:base-points:hidden-danger:rainstorm'
+        rainstorm-landslide: 'xian:init:data:base-points:hidden-danger:rainstorm:landslide'
+        rainstorm-debris-flow: 'xian:init:data:base-points:hidden-danger:rainstorm:debris_flow'
+        rainstorm-flash-flood: 'xian:init:data:base-points:hidden-danger:rainstorm:flash_flood'
+        rainstorm-water-logging: 'xian:init:data:base-points:hidden-danger:rainstorm:water_logging'
         earthquake: 'xian:init:data:base-points:hidden-danger:earthquake'
+        earthquake-landslide: 'xian:init:data:base-points:hidden-danger:earthquake:landslide'
+        earthquake-debris-flow: 'xian:init:data:base-points:hidden-danger:earthquake:debris_flow'
       risk: 'xian:init:data:base-points:risk'
       hospitals: 'xian:init:data:base-points:hospitals'
       dangerous-source: 'xian:init:data:base-points:dangerous-source'

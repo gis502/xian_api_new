@@ -29,15 +29,29 @@
     <select id="getBasePoints" resultMap="XianHiddenDangerSpotsResultMap">
         SELECT id, disaster_name, lon, lat, disaster_type FROM xian_hidden_danger_spots
         <where>
-            <choose>
-                <when test='disasterType == "rainstorm"'>
-                    disaster_type IN('滑坡', '泥石流', '山洪', '内涝')
-                </when>
-                <otherwise>
-                    disaster_type IN('滑坡', '泥石流')
-                </otherwise>
-            </choose>
-            AND is_delete = 0
+            is_delete = 0
+            <if test="type != null and type == 'rainstorm'">
+                AND disaster_type IN('滑坡', '泥石流', '山洪', '内涝')
+            </if>
+            <if test="type != null and type == 'earthquake'">
+                AND disaster_type IN('滑坡', '泥石流')
+            </if>
+            <if test="disasterType != null and disasterType != ''">
+                <choose>
+                    <when test="disasterType == 'landslide'">
+                        AND disaster_type = '滑坡'
+                    </when>
+                    <when test="disasterType == 'debris_flow'">
+                        AND disaster_type = '泥石流'
+                    </when>
+                    <when test="disasterType == 'flash_flood'">
+                        AND disaster_type = '山洪'
+                    </when>
+                    <when test="disasterType == 'waterlogging'">
+                        AND disaster_type = '内涝'
+                    </when>
+                </choose>
+            </if>
         </where>
     </select>
 
