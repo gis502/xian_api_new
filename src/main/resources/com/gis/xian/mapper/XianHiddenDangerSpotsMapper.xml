@@ -42,7 +42,7 @@
                     <when test="disasterType == 'flash_flood'">
                         AND disaster_type = '山洪'
                     </when>
-                    <when test="disasterType == 'waterlogging'">
+                    <when test="disasterType == 'water_logging'">
                         AND disaster_type = '内涝'
                     </when>
                 </choose>

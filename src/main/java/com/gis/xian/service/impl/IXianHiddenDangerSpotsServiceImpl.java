@@ -72,7 +72,7 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
                 return debrisFlowKey;
             case "flash_flood":
                 return flashFloodKey;
-            case "waterlogging":
+            case "water_logging":
                 return waterLoggingKey;
             default:
                 return allBasePointsKey;
