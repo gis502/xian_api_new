@@ -3,7 +3,7 @@ package com.gis.xian.entity;
 import lombok.Data;
 
 /**
- * 地质灾害隐患点
+ * 隐患点（滑坡、泥石流、山洪、内涝）
  * @TableName xian_hidden_danger_spots
  */
 @Data

@@ -11,14 +11,11 @@ init:
     # 基础信息点数据：滑坡、泥石流、山洪、内涝
     base-points:
       hidden-danger:
-        rainstorm: 'xian:init:data:base-points:hidden-danger:rainstorm'
-        rainstorm-landslide: 'xian:init:data:base-points:hidden-danger:rainstorm:landslide'
-        rainstorm-debris-flow: 'xian:init:data:base-points:hidden-danger:rainstorm:debris_flow'
-        rainstorm-flash-flood: 'xian:init:data:base-points:hidden-danger:rainstorm:flash_flood'
-        rainstorm-water-logging: 'xian:init:data:base-points:hidden-danger:rainstorm:water_logging'
-        earthquake: 'xian:init:data:base-points:hidden-danger:earthquake'
-        earthquake-landslide: 'xian:init:data:base-points:hidden-danger:earthquake:landslide'
-        earthquake-debris-flow: 'xian:init:data:base-points:hidden-danger:earthquake:debris_flow'
+        all: 'xian:init:data:base-points:hidden-danger:all'
+        landslide: 'xian:init:data:base-points:hidden-danger:landslide'
+        debris-flow: 'xian:init:data:base-points:hidden-danger:debris_flow'
+        flash-flood: 'xian:init:data:base-points:hidden-danger:flash_flood'
+        water-logging: 'xian:init:data:base-points:hidden-danger:water_logging'
       risk: 'xian:init:data:base-points:risk'
       hospitals: 'xian:init:data:base-points:hospitals'
       dangerous-source: 'xian:init:data:base-points:dangerous-source'

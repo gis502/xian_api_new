@@ -4,11 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum DisasterTypeEnum {
-    // 第一级：灾害大类
-    RAINSTORM("rainstorm", "暴雨"),
-    EARTHQUAKE("earthquake", "地震"),
-    
-    // 第二级：具体灾害类型（暴雨类）
+    // 具体灾害类型
     LANDSLIDE("landslide", "滑坡"),
     DEBRIS_FLOW("debris_flow", "泥石流"),
     FLASH_FLOOD("flash_flood", "山洪"),

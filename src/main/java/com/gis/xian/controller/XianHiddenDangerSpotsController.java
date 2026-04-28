@@ -18,9 +18,8 @@ public class XianHiddenDangerSpotsController extends BaseController{
 
     @GetMapping("/base-points")
     public ApiResponse<List<XianHiddenDangerSpotsBasePointVo>> getBasePoints(
-            @RequestParam String type,
             @RequestParam(required = false) String disasterType) {
-        return ApiResponse.ok(xianHiddenDangerSpotsService.getBasePoints(type, disasterType));
+        return ApiResponse.ok(xianHiddenDangerSpotsService.getBasePoints(disasterType));
     }
 
     @GetMapping("point-detail/{id}")

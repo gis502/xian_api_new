@@ -30,12 +30,7 @@
         SELECT id, disaster_name, lon, lat, disaster_type FROM xian_hidden_danger_spots
         <where>
             is_delete = 0
-            <if test="type != null and type == 'rainstorm'">
-                AND disaster_type IN('滑坡', '泥石流', '山洪', '内涝')
-            </if>
-            <if test="type != null and type == 'earthquake'">
-                AND disaster_type IN('滑坡', '泥石流')
-            </if>
+            AND disaster_type IN('滑坡', '泥石流', '山洪', '内涝')
             <if test="disasterType != null and disasterType != ''">
                 <choose>
                     <when test="disasterType == 'landslide'">
