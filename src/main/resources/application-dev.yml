@@ -41,7 +41,15 @@ safety:
     no-encrypt-paths:
       - /crypto/sm2/public-key
       - /druid
+      - /algorithm-api/rainfall/grid
     # 请求无需解密的路径
     no-decrypt-paths:
       - /crypto/sm2/public-key
       - /druid
+      - /algorithm-api/rainfall/grid
+
+# 算法服务器配置
+algorithm:
+  server:
+    # 开发环境算法服务器地址
+    url: http://localhost:8082
