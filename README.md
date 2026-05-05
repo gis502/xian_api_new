@@ -106,5 +106,20 @@ bin\package.bat
 - `application-database-dev.yml`: 开发环境数据库配置
 - `application-database-prod.yml`: 生产环境数据库配置
 
+# geo_server相关说明
+1. 版本：2.28.3
+2. 安装：
+```
+docker pull docker.osgeo.org/geoserver:2.28.3
+
+docker run -d \
+  --log-driver none \
+  --name geoserver \
+  -p 8080:4020 \
+  -e GEOSERVER_ADMIN_USER=admin \
+  -e GEOSERVER_ADMIN_PASSWORD=geoserver \
+  -v /mydata/geoserver/data_dir:/data_dir \
+  kartoza/geoserver
+```
 ## 许可证
 本项目基于 [MIT License](LICENSE) 开源，详情请查看LICENSE文件。
