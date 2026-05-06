@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.SysTableInfoMapper">
+
+    <resultMap id="TableInfoResultMap" type="com.gis.xian.entity.SysTableInfo">
+        <result property="tableName" column="table_name" />
+        <result property="tableComment" column="table_comment" />
+        <result property="rowCount" column="row_count" />
+        <result property="dataSize" column="data_size" />
+    </resultMap>
+
+    <!-- 获取所有数据库表信息 -->
+    <!-- @lang PostgreSQL -->
+    <select id="getAllTables" resultMap="TableInfoResultMap">
+        SELECT
+            t.table_name,
+            COALESCE(d.description, '') as table_comment,
+            COALESCE(s.n_live_tup, 0) as row_count,
+            '0 MB' as data_size
+        FROM information_schema.tables t
+                 LEFT JOIN pg_class c ON t.table_name = c.relname
+                 LEFT JOIN pg_description d ON c.oid = d.objoid AND d.objsubid = 0
+                 LEFT JOIN pg_stat_user_tables s ON t.table_name = s.relname
+        WHERE t.table_schema = 'public'
+          AND t.table_type = 'BASE TABLE'
+        ORDER BY t.table_name
+    </select>
+
+    <!-- 根据表名查询表的具体数据记录 -->
+    <!-- @lang PostgreSQL -->
+    <select id="getTableData" resultType="java.util.Map">
+        SELECT * FROM ${tableName}
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+    <!-- 获取表的字段信息 -->
+    <!-- @lang PostgreSQL -->
+    <select id="getTableColumns" resultType="java.util.Map">
+        SELECT
+            column_name,
+            data_type,
+            is_nullable,
+            column_default
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = #{tableName}
+        ORDER BY ordinal_position
+    </select>
+</mapper>
