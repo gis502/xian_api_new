@@ -44,13 +44,13 @@ public class SysTableInfoController extends BaseController {
     /**
      * 查看表的具体数据内容
      * @param tableName 表名
-     * @param limit 限制返回的记录数（可选，默认100）
+     * @param limit 限制返回的记录数（可选，不传则不限制）
      * @return 表数据记录
      */
     @GetMapping("/data/{tableName}")
     public ApiResponse<Map<String, Object>> getTableData(
             @PathVariable String tableName,
-            @RequestParam(defaultValue = "100") Integer limit) {
+            @RequestParam(required = false) Integer limit) {
         
         // 获取表数据
         List<Map<String, Object>> data = sysTableInfoService.getTableData(tableName, limit);

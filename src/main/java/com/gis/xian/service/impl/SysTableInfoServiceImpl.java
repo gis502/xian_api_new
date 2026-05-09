@@ -28,10 +28,7 @@ public class SysTableInfoServiceImpl implements SysTableInfoService {
         if (tableName == null || tableName.trim().isEmpty()) {
             throw new IllegalArgumentException("表名不能为空");
         }
-        // 默认限制100条记录
-        if (limit == null || limit <= 0) {
-            limit = 100;
-        }
+        // 不限制记录数，返回所有数据
         return sysTableInfoMapper.getTableData(tableName, limit);
     }
 
