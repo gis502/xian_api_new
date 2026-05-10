@@ -30,4 +30,20 @@ public interface SysTableInfoService {
      * @return 字段信息列表
      */
     List<Map<String, Object>> getTableColumns(String tableName);
+
+    /**
+     * 修改表信息（表名、表描述）
+     * @param oldTableName 原表名
+     * @param newTableName 新表名（可为null）
+     * @param newComment 新表描述（可为null）
+     */
+    void updateTableInfo(String oldTableName, String newTableName, String newComment);
+
+    /**
+     * 修改表中的具体数据记录
+     * @param tableName 表名
+     * @param whereConditions WHERE条件
+     * @param updateData 更新数据
+     */
+    void updateTableData(String tableName, Map<String, Object> whereConditions, Map<String, Object> updateData);
 }

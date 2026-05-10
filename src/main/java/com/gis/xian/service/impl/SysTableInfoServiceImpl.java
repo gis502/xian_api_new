@@ -28,7 +28,6 @@ public class SysTableInfoServiceImpl implements SysTableInfoService {
         if (tableName == null || tableName.trim().isEmpty()) {
             throw new IllegalArgumentException("表名不能为空");
         }
-        // 不限制记录数，返回所有数据
         return sysTableInfoMapper.getTableData(tableName, limit);
     }
 
@@ -38,6 +37,34 @@ public class SysTableInfoServiceImpl implements SysTableInfoService {
             throw new IllegalArgumentException("表名不能为空");
         }
         return sysTableInfoMapper.getTableColumns(tableName);
+    }
+
+    @Override
+    public void updateTableInfo(String oldTableName, String newTableName, String newComment) {
+        if (oldTableName == null || oldTableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("原表名不能为空");
+        }
+        
+        if (newTableName == null && newComment == null) {
+            throw new IllegalArgumentException("新表名和新描述至少需要提供一个");
+        }
+        
+        sysTableInfoMapper.updateTableInfo(oldTableName, newTableName, newComment);
+    }
+
+    @Override
+    public void updateTableData(String tableName, Map<String, Object> whereConditions, Map<String, Object> updateData) {
+        if (tableName == null || tableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("表名不能为空");
+        }
+        if (whereConditions == null || whereConditions.isEmpty()) {
+            throw new IllegalArgumentException("WHERE条件不能为空");
+        }
+        if (updateData == null || updateData.isEmpty()) {
+            throw new IllegalArgumentException("更新数据不能为空");
+        }
+        
+        sysTableInfoMapper.updateTableData(tableName, whereConditions, updateData);
     }
 }
 

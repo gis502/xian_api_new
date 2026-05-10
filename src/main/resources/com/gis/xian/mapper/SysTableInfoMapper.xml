@@ -1,7 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.gis.xian.mapper.SysTableInfoMapper">
 
     <resultMap id="TableInfoResultMap" type="com.gis.xian.entity.SysTableInfo">
@@ -12,7 +10,6 @@
     </resultMap>
 
     <!-- 获取所有数据库表信息 -->
-    <!-- @lang PostgreSQL -->
     <select id="getAllTables" resultMap="TableInfoResultMap">
         SELECT
             t.table_name,
@@ -29,17 +26,15 @@
     </select>
 
     <!-- 根据表名查询表的具体数据记录 -->
-    <!-- @lang PostgreSQL -->
-    <select id="getTableData" resultType="java.util.Map">
+    <select id="getTableData" resultType="map">
         SELECT * FROM ${tableName}
-        <if test="limit != null and limit > 0">
+        <if test="limit != null">
             LIMIT #{limit}
         </if>
     </select>
 
     <!-- 获取表的字段信息 -->
-    <!-- @lang PostgreSQL -->
-    <select id="getTableColumns" resultType="java.util.Map">
+    <select id="getTableColumns" resultType="map">
         SELECT
             column_name,
             data_type,
@@ -50,4 +45,38 @@
           AND table_name = #{tableName}
         ORDER BY ordinal_position
     </select>
+
+    <!-- 修改表信息 -->
+    <update id="updateTableInfo">
+        <if test="newTableName != null and newTableName != ''">
+            ALTER TABLE ${oldTableName} RENAME TO ${newTableName};
+        </if>
+        <if test="newComment != null and newComment != ''">
+            COMMENT ON TABLE
+            <choose>
+                <when test="newTableName != null and newTableName != ''">
+                    ${newTableName}
+                </when>
+                <otherwise>
+                    ${oldTableName}
+                </otherwise>
+            </choose>
+            IS #{newComment};
+        </if>
+    </update>
+
+    <!-- 修改表数据 -->
+    <update id="updateTableData">
+        UPDATE ${tableName}
+        <set>
+            <foreach collection="updateData" item="value" index="key" separator=",">
+                ${key} = #{value}
+            </foreach>
+        </set>
+        WHERE 1=1
+        <foreach collection="whereConditions" item="value" index="key">
+            AND ${key} = #{value}
+        </foreach>
+    </update>
+
 </mapper>

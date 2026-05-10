@@ -30,5 +30,25 @@ public interface SysTableInfoMapper {
      * @return 字段信息列表
      */
     List<Map<String, Object>> getTableColumns(@Param("tableName") String tableName);
+
+    /**
+     * 修改表信息
+     * @param oldTableName 原表名
+     * @param newTableName 新表名
+     * @param newComment 新表描述
+     */
+    void updateTableInfo(@Param("oldTableName") String oldTableName,
+                         @Param("newTableName") String newTableName,
+                         @Param("newComment") String newComment);
+
+    /**
+     * 修改表数据
+     * @param tableName 表名
+     * @param whereConditions WHERE条件
+     * @param updateData 更新数据
+     */
+    void updateTableData(@Param("tableName") String tableName,
+                         @Param("whereConditions") Map<String, Object> whereConditions,
+                         @Param("updateData") Map<String, Object> updateData);
 }
 

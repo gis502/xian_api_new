@@ -67,5 +67,56 @@ public class SysTableInfoController extends BaseController {
         
         return ApiResponse.ok(result);
     }
+
+    /**
+     * 修改表信息（表名、表描述）
+     * @param oldTableName 原表名
+     * @param newTableName 新表名（可选）
+     * @param newComment 新表描述（可选）
+     * @return 操作结果
+     */
+    @PutMapping("/update-table-info")
+    public ApiResponse<Void> updateTableInfo(
+            @RequestParam String oldTableName,
+            @RequestParam(required = false) String newTableName,
+            @RequestParam(required = false) String newComment) {
+        try {
+            sysTableInfoService.updateTableInfo(oldTableName, newTableName, newComment);
+            return ApiResponse.ok(null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 修改表中的具体数据记录
+     * @param tableName 表名
+     * @param whereConditions WHERE条件（JSON格式，如 {"id": 1}）
+     * @param updateData 更新数据（JSON格式，如 {"name": "新值"}）
+     * @return 操作结果
+     */
+    @PutMapping("/update-data/{tableName}")
+    public ApiResponse<Void> updateTableData(
+            @PathVariable String tableName,
+            @RequestBody Map<String, Object> request) {
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> whereConditions = (Map<String, Object>) request.get("whereConditions");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> updateData = (Map<String, Object>) request.get("updateData");
+            
+            if (whereConditions == null || whereConditions.isEmpty()) {
+                return ApiResponse.error("WHERE条件不能为空");
+            }
+            if (updateData == null || updateData.isEmpty()) {
+                return ApiResponse.error("更新数据不能为空");
+            }
+            
+            sysTableInfoService.updateTableData(tableName, whereConditions, updateData);
+            return ApiResponse.ok(null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
 }
 
