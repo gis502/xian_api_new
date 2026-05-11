@@ -29,7 +29,11 @@
     <select id="getTableData" resultType="map">
         SELECT * FROM ${tableName}
         <if test="limit != null">
+            ORDER BY id ASC
             LIMIT #{limit}
+        </if>
+        <if test="limit == null">
+            ORDER BY id ASC
         </if>
     </select>
 
