@@ -3,12 +3,15 @@ package com.gis.xian.controller;
 import com.gis.xian.domain.ApiResponse;
 import com.gis.xian.entity.SysTableInfo;
 import com.gis.xian.service.SysTableInfoService;
+import com.gis.xian.utils.safety.GeometryUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 数据库表信息控制器
@@ -58,6 +61,9 @@ public class SysTableInfoController extends BaseController {
         // 获取表字段信息
         List<Map<String, Object>> columns = sysTableInfoService.getTableColumns(tableName);
         
+        // 处理 geometry 字段：将 point 转换为 lon 和 lat
+        processGeometryFields(data, columns);
+        
         // 组装返回结果
         Map<String, Object> result = new HashMap<>();
         result.put("tableName", tableName);
@@ -66,6 +72,91 @@ public class SysTableInfoController extends BaseController {
         result.put("total", data.size());
         
         return ApiResponse.ok(result);
+    }
+
+    /**
+     * 处理 geometry 字段：将 WKB 数据转换为 lon 和 lat
+     * @param data 表数据
+     * @param columns 字段信息
+     */
+    private void processGeometryFields(List<Map<String, Object>> data, List<Map<String, Object>> columns) {
+        if (data == null || data.isEmpty() || columns == null) {
+            return;
+        }
+        
+        // 遍历所有字段，查找可能包含 WKB 数据的字段
+        for (Map<String, Object> col : columns) {
+            String columnName = (String) col.get("column_name");
+            
+            // 遍历每一行数据
+            for (Map<String, Object> row : data) {
+                Object value = row.get(columnName);
+                if (value != null) {
+                    String valueStr = value.toString();
+                    
+                    // 检查是否为十六进制字符串（WKB 特征）
+                    if (isWKBFormat(valueStr)) {
+                        try {
+                            // 将 WKB 转换为 lon 和 lat
+                            String[] lonLat = GeometryUtil.wkbToLonLat(valueStr);
+                            if (lonLat != null && lonLat.length == 2) {
+                                // 创建一个新的 Map 来存储转换后的数据
+                                Map<String, Object> newRow = new java.util.HashMap<>(row);
+                                // 移除原始字段
+                                newRow.remove(columnName);
+                                // 添加 lon 和 lat 字段
+                                newRow.put("lon", lonLat[0]);
+                                newRow.put("lat", lonLat[1]);
+                                
+                                // 用新 Map 替换旧 Map
+                                int index = data.indexOf(row);
+                                if (index >= 0) {
+                                    data.set(index, newRow);
+                                }
+                                
+                                System.out.println("成功转换字段: " + columnName + " -> lon: " + lonLat[0] + ", lat: " + lonLat[1]);
+                            }
+                        } catch (Exception e) {
+                            // 转换失败，保留原始数据
+                            System.err.println("转换字段 " + columnName + " 失败: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * 检查字符串是否为 WKB 格式（十六进制字符串）
+     * WKB 特征：长度为偶数，只包含十六进制字符，长度通常为 42（Point 类型）
+     * @param value 字符串值
+     * @return 是否为 WKB 格式
+     */
+    private boolean isWKBFormat(String value) {
+        if (value == null || value.isEmpty()) {
+            return false;
+        }
+        
+        // 移除 0x 前缀（如果有）
+        String hexValue = value;
+        if (hexValue.startsWith("0x") || hexValue.startsWith("0X")) {
+            hexValue = hexValue.substring(2);
+        }
+        
+        // 检查长度是否为偶数（十六进制字符串的特征）
+        if (hexValue.length() % 2 != 0) {
+            return false;
+        }
+        
+        // 检查是否只包含十六进制字符
+        if (!hexValue.matches("^[0-9A-Fa-f]+$")) {
+            return false;
+        }
+        
+        // Point 类型的 WKB 通常是 42 个字符（21 字节）
+        // 但也可以是其他长度
+        return hexValue.length() >= 42;
     }
 
     /**
@@ -91,8 +182,7 @@ public class SysTableInfoController extends BaseController {
     /**
      * 修改表中的具体数据记录
      * @param tableName 表名
-     * @param whereConditions WHERE条件（JSON格式，如 {"id": 1}）
-     * @param updateData 更新数据（JSON格式，如 {"name": "新值"}）
+     * @param request 请求体，包含 whereConditions 和 updateData
      * @return 操作结果
      */
     @PutMapping("/update-data/{tableName}")
@@ -112,10 +202,59 @@ public class SysTableInfoController extends BaseController {
                 return ApiResponse.error("更新数据不能为空");
             }
             
+            // 处理 geometry 字段：将 lon 和 lat 转换为 WKB
+            Map<String, Object> columns = sysTableInfoService.getTableColumns(tableName)
+                    .stream()
+                    .collect(Collectors.toMap(
+                            col -> (String) col.get("column_name"),
+                            col -> col
+                    ));
+            
+            processGeometryUpdate(updateData, columns);
+            
             sysTableInfoService.updateTableData(tableName, whereConditions, updateData);
             return ApiResponse.ok(null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 处理 geometry 字段更新：将 lon 和 lat 转换为 WKB
+     * @param updateData 更新数据
+     * @param columns 字段信息
+     */
+    private void processGeometryUpdate(Map<String, Object> updateData, Map<String, Object> columns) {
+        if (updateData == null || columns == null) {
+            return;
+        }
+        
+        // 检查是否有 lon 和 lat 字段
+        if (updateData.containsKey("lon") && updateData.containsKey("lat")) {
+            // 查找 geometry 类型的字段
+            for (Map.Entry<String, Object> entry : columns.entrySet()) {
+                String columnName = entry.getKey();
+                Map<String, Object> colInfo = (Map<String, Object>) entry.getValue();
+                String dataType = (String) colInfo.get("data_type");
+                
+                if (dataType != null && dataType.toLowerCase().contains("geometry")) {
+                    try {
+                        // 将 lon 和 lat 转换为 WKB
+                        String lon = updateData.get("lon").toString();
+                        String lat = updateData.get("lat").toString();
+                        String wkb = GeometryUtil.lonLatToWkb(lon, lat);
+                        
+                        // 更新 geometry 字段
+                        updateData.put(columnName, wkb);
+                        
+                        // 移除 lon 和 lat 字段
+                        updateData.remove("lon");
+                        updateData.remove("lat");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 }
