@@ -24,14 +24,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
-/**
- * 初始化数据
- */
 @Component
 @Slf4j
 public class InitializeData {
@@ -62,6 +60,9 @@ public class InitializeData {
 
     @Resource
     RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Value("${init.data.base-points.hidden-danger.rainstorm}")
     private String rainstormBasePointsKey;
@@ -94,7 +95,9 @@ public class InitializeData {
     @Async("xianPool")
     public void init() {
         log.info("开始初始化数据");
-        // 并行执行所有数据库查询和Redis写入
+        
+        updateDatabaseStatistics();
+        
         CompletableFuture<Void> rainstormFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(
                             XianHiddenDangerSpotsBasePointVo.entity2Vo(
@@ -176,12 +179,21 @@ public class InitializeData {
             log.info("加载学校基本信息写入redis完成");
         });
 
-        // 等待所有任务完成
         CompletableFuture.allOf(
                 rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
                 dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture
         ).join();
 
         log.info("初始化数据完成");
+    }
+
+    private void updateDatabaseStatistics() {
+        try {
+            log.info("开始更新数据库统计信息...");
+            jdbcTemplate.execute("ANALYZE");
+            log.info("数据库统计信息更新完成");
+        } catch (Exception e) {
+            log.error("更新数据库统计信息失败", e);
+        }
     }
 }
