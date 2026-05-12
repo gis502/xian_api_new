@@ -24,11 +24,19 @@ public class SysTableInfoServiceImpl implements SysTableInfoService {
     }
 
     @Override
-    public List<Map<String, Object>> getTableData(String tableName, Integer limit) {
+    public List<Map<String, Object>> getTableData(String tableName, Integer limit, Integer offset) {
         if (tableName == null || tableName.trim().isEmpty()) {
             throw new IllegalArgumentException("表名不能为空");
         }
-        return sysTableInfoMapper.getTableData(tableName, limit);
+        return sysTableInfoMapper.getTableData(tableName, limit, offset);
+    }
+
+    @Override
+    public int getTableTotalCount(String tableName) {
+        if (tableName == null || tableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("表名不能为空");
+        }
+        return sysTableInfoMapper.getTableTotalCount(tableName);
     }
 
     @Override

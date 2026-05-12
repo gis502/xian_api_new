@@ -17,12 +17,20 @@ public interface SysTableInfoService {
     List<SysTableInfo> getAllTables();
 
     /**
-     * 根据表名查询表的具体数据记录
+     * 根据表名查询表的具体数据记录（分页）
      * @param tableName 表名
-     * @param limit 限制返回的记录数
+     * @param limit 每页条数
+     * @param offset 偏移量
      * @return 表数据记录列表
      */
-    List<Map<String, Object>> getTableData(String tableName, Integer limit);
+    List<Map<String, Object>> getTableData(String tableName, Integer limit, Integer offset);
+
+    /**
+     * 获取表的总记录数
+     * @param tableName 表名
+     * @return 总记录数
+     */
+    int getTableTotalCount(String tableName);
 
     /**
      * 获取表的字段信息

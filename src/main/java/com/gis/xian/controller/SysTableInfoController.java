@@ -47,16 +47,24 @@ public class SysTableInfoController extends BaseController {
     /**
      * 查看表的具体数据内容
      * @param tableName 表名
-     * @param limit 限制返回的记录数（可选，不传则不限制）
+     * @param page 页码（可选，默认1）
+     * @param pageSize 每页条数（可选，默认10）
      * @return 表数据记录
      */
     @GetMapping("/data/{tableName}")
     public ApiResponse<Map<String, Object>> getTableData(
             @PathVariable String tableName,
-            @RequestParam(required = false) Integer limit) {
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer pageSize) {
         
-        // 获取表数据
-        List<Map<String, Object>> data = sysTableInfoService.getTableData(tableName, limit);
+        // 计算 OFFSET
+        int offset = (page - 1) * pageSize;
+        
+        // 获取表数据（分页）
+        List<Map<String, Object>> data = sysTableInfoService.getTableData(tableName, pageSize, offset);
+        
+        // 获取总记录数
+        int total = sysTableInfoService.getTableTotalCount(tableName);
         
         // 获取表字段信息
         List<Map<String, Object>> columns = sysTableInfoService.getTableColumns(tableName);
@@ -69,7 +77,7 @@ public class SysTableInfoController extends BaseController {
         result.put("tableName", tableName);
         result.put("columns", columns);
         result.put("data", data);
-        result.put("total", data.size());
+        result.put("total", total);
         
         return ApiResponse.ok(result);
     }
