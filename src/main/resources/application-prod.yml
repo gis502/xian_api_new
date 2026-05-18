@@ -42,10 +42,12 @@ safety:
     no-encrypt-paths:
       - /crypto/sm2/public-key
       - /algorithm-api/rainfall/grid
+      - /websocket/**
     # 请求无需解密的路径
     no-decrypt-paths:
       - /crypto/sm2/public-key
       - /algorithm-api/rainfall/grid
+      - /websocket/**
 
 # 算法服务器配置
 algorithm:
