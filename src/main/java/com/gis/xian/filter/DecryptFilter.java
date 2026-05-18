@@ -3,6 +3,7 @@ package com.gis.xian.filter;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.gis.xian.config.CryptoProperties;
+import com.gis.xian.utils.PathMatcherUtils;
 import com.gis.xian.utils.safety.SM2Utils;
 import com.gis.xian.utils.safety.SM4Utils;
 import com.gis.xian.wrapper.Sm4KeyHolder;
@@ -85,15 +86,10 @@ public class DecryptFilter implements Filter {
     }
 
     /**
-     * 检查是否为无需解密的路径
+     * 检查是否为无需解密的路径（支持通配符匹配）
      */
     private boolean isNoDecryptPath(String requestUri) {
-        for (String path : cryptoProperties.getNoDecryptPaths()) {
-            if (requestUri.contains(path)) {
-                return true;
-            }
-        }
-        return false;
+        return PathMatcherUtils.matches(requestUri, cryptoProperties.getNoDecryptPaths());
     }
 
     /**

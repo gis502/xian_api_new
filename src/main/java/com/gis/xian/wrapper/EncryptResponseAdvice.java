@@ -2,6 +2,7 @@ package com.gis.xian.wrapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gis.xian.config.CryptoProperties;
+import com.gis.xian.utils.PathMatcherUtils;
 import com.gis.xian.utils.safety.SM4Utils;
 import jakarta.annotation.Resource;
 import org.springframework.core.MethodParameter;
@@ -29,7 +30,7 @@ public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
     private CryptoProperties cryptoProperties;
 
     /**
-     * 判断是否需要加密：排除特定路径，其余全部加密
+     * 判断是否需要加密：排除特定路径，其余全部加密（支持通配符匹配）
      */
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -41,19 +42,12 @@ public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
         HttpServletRequest request = attributes.getRequest();
         String requestUri = request.getRequestURI();
 
-        // 检查是否为无需加密的路径
-        for (String path : cryptoProperties.getNoEncryptPaths()) {
-            if (requestUri.contains(path)) {
-                return false; // 排除路径，不加密
-            }
-        }
-
-        // 其余路径均需要加密
-        return true;
+        // 检查是否为无需加密的路径（支持通配符）
+        return !PathMatcherUtils.matches(requestUri, cryptoProperties.getNoEncryptPaths());
     }
 
     /**
-     * 响应体加密逻辑（保持不变）
+     * 响应体加密逻辑
      */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
@@ -61,15 +55,17 @@ public class EncryptResponseAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpRequest request, ServerHttpResponse response) {
         try {
             String sm4Key = Sm4KeyHolder.getSm4Key();
+            // 如果SM4密钥不存在，直接返回原始数据（不加密）
             if (sm4Key == null || sm4Key.length() != 32) {
-                throw new RuntimeException("SM4密钥不存在或格式错误，无法加密响应");
+                return body;
             }
 
             String plaintext = objectMapper.writeValueAsString(body);
             String encryptedText = SM4Utils.encrypt(sm4Key, plaintext);
             return encryptedText;
         } catch (Exception e) {
-            throw new RuntimeException("响应数据加密失败: " + e.getMessage(), e);
+            // 加密失败时返回原始数据，避免影响业务
+            return body;
         } finally {
             Sm4KeyHolder.clear(); // 清除线程本地存储，避免内存泄漏
         }
