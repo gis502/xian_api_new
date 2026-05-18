@@ -41,13 +41,13 @@ safety:
     no-encrypt-paths:
       - /crypto/sm2/public-key
       - /druid
-      - /algorithm-api/rainfall/grid
+      - /websocket/info
       - /websocket/**
     # 请求无需解密的路径
     no-decrypt-paths:
       - /crypto/sm2/public-key
       - /druid
-      - /algorithm-api/rainfall/grid
+      - /websocket/info
       - /websocket/**
 
 # 算法服务器配置

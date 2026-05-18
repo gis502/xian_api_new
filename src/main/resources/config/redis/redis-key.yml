@@ -5,6 +5,15 @@ safety:
     global: 'xian:sm2:keypair:global'
 
 
+# 降雨网格数据
+rainfall:
+  grid:
+    # 降雨站点网格数据
+    station-grid: 'xian:rainfall:rain_station_grid'
+    # 降雨站点标识符
+    station-identifier: 'xian:rainfall:rain_station_identifier'
+
+
 # 初始化数据存储
 init:
   data:

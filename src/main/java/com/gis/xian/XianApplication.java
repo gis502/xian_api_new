@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 后台启动入口
  * 启动时过滤DataSourceAutoConfiguration，避免数据源自动配置
  */
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@EnableScheduling // 启用定时任务支持
 @MapperScan("com.gis.xian.mapper") // 扫描MyBatis的Mapper接口
 public class XianApplication {
 
