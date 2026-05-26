@@ -8,6 +8,9 @@ safety:
 # 初始化数据存储
 init:
   data:
+    # 数据表列表信息
+    table-info:
+      list: 'xian:init:data:table-info:list'
     # 基础信息点数据：滑坡、泥石流、山洪、内涝
     base-points:
       hidden-danger:

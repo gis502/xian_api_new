@@ -10,6 +10,7 @@ import com.gis.xian.mapper.XianHospitalsMapper;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
 import com.gis.xian.mapper.XianSchoolMapper;
 import com.gis.xian.mapper.XianStorePointsMapper;
+import com.gis.xian.mapper.SysTableInfoMapper;
 import com.gis.xian.vo.XianDangerousSourceBasePointVo;
 import com.gis.xian.vo.XianEmergencyShelterBasePointVo;
 import com.gis.xian.vo.XianFirefighterBasePointVo;
@@ -59,6 +60,9 @@ public class InitializeData {
     private XianSchoolMapper xianSchoolMapper;
 
     @Resource
+    private SysTableInfoMapper sysTableInfoMapper;
+
+    @Resource
     RedisTemplate<String, Object> redisTemplate;
 
     @Resource
@@ -91,12 +95,22 @@ public class InitializeData {
     @Value("${init.data.base-points.school}")
     private String schoolBasePointsKey;
 
+    @Value("${init.data.table-info.list}")
+    private String tableInfoListKey;
+
     @EventListener(ApplicationReadyEvent.class)
     @Async("xianPool")
     public void init() {
         log.info("开始初始化数据");
         
         updateDatabaseStatistics();
+        
+        CompletableFuture<Void> tableInfoFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(tableInfoListKey, JSON.toJSONString(
+                    sysTableInfoMapper.getAllTables()
+            ));
+            log.info("加载数据表列表信息并写入redis完成");
+        });
         
         CompletableFuture<Void> rainstormFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(rainstormBasePointsKey, JSON.toJSONString(
@@ -180,7 +194,7 @@ public class InitializeData {
         });
 
         CompletableFuture.allOf(
-                rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
+                tableInfoFuture, rainstormFuture, earthquakeFuture, riskFuture, hospitalsFuture,
                 dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture
         ).join();
 
