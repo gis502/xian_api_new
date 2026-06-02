@@ -7,7 +7,7 @@ spring:
 
 # MyBatis 配置
 mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.gis.basic_template_not_login_back.entity
+  mapper-locations: classpath:com/gis/xian/mapper/*.xml
+  type-aliases-package: com.gis.xian.entity
   configuration:
     map-underscore-to-camel-case: true
