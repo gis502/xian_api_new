@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * 初始化数据
  */
-@Component
+//@Component
 @Slf4j
 public class InitializeData {
 
@@ -107,7 +107,7 @@ public class InitializeData {
     public void init() {
         log.info("开始初始化数据");
         // 并行执行所有数据库查询和Redis写入
-        
+
         // 隐患点 - 总体
         CompletableFuture<Void> allFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(allBasePointsKey, JSON.toJSONString(
@@ -117,7 +117,7 @@ public class InitializeData {
             );
             log.info("加载隐患点信息（总体）并写入redis完成");
         });
-        
+
         // 隐患点 - 滑坡
         CompletableFuture<Void> landslideFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(landslideKey, JSON.toJSONString(
@@ -127,7 +127,7 @@ public class InitializeData {
             );
             log.info("加载隐患点信息（滑坡）并写入redis完成");
         });
-        
+
         // 隐患点 - 泥石流
         CompletableFuture<Void> debrisFlowFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(debrisFlowKey, JSON.toJSONString(
@@ -137,7 +137,7 @@ public class InitializeData {
             );
             log.info("加载隐患点信息（泥石流）并写入redis完成");
         });
-        
+
         // 隐患点 - 山洪
         CompletableFuture<Void> flashFloodFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(flashFloodKey, JSON.toJSONString(
@@ -147,7 +147,7 @@ public class InitializeData {
             );
             log.info("加载隐患点信息（山洪）并写入redis完成");
         });
-        
+
         // 隐患点 - 内涝
         CompletableFuture<Void> waterLoggingFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(waterLoggingKey, JSON.toJSONString(

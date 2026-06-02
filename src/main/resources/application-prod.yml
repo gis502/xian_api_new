@@ -15,6 +15,31 @@ spring:
       password: XAYJ@gis2603
       database: 0
       connect-timeout: 3000ms
+    # rabbitmq 配置
+    rabbitmq:
+      host: localhost
+      port: 5672
+      #    username: xiaodemo
+      #    password: 1234
+      username: zzw
+      password: zzw0401
+      #虚拟host 可以不设置,使用server默认host
+      #    virtual-host: /xiaodemos
+      #消息确认配置项
+      publisher-returns: true #确认消息已发送到队列(Queue)
+      publisher-confirm-type: correlated
+      listener: # 手动确认消息配置
+        simple:
+          acknowledge-mode: manual # 全局开启消费者手动确认
+          # 优化配置
+          concurrency: 1 # 最小消费者数
+          max-concurrency: 5 # 最大消费者数
+          prefetch: 1 # 每次从队列取1条消息，处理完再取（避免消息堆积）
+          retry:
+            enabled: true # 开启消费者重试（建议结合业务幂等性使用）
+            max-attempts: 3 # 最大重试次数
+            initial-interval: 1000ms # 第一次重试间隔
+            multiplier: 2 # 重试间隔倍数（第二次2s，第三次4s）
 
 # 日志配置
 logging:

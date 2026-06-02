@@ -12,19 +12,25 @@ import java.util.Map;
 
 @Configuration
 public class DataSourceConfig {
-    
+
     @Bean
     @ConfigurationProperties("spring.datasource.master")
     public DataSource master() {
         return DruidDataSourceBuilder.create().build();
     }
-    
+
     @Bean
     @ConfigurationProperties("spring.datasource.slave")
     public DataSource slave() {
         return DruidDataSourceBuilder.create().build();
     }
-    
+
+    @Bean
+    @ConfigurationProperties("spring.datasource.slave1")
+    public DataSource slave1() {
+        return DruidDataSourceBuilder.create().build();
+    }
+
     @Bean
     @Primary
     public DataSource dataSource() {
@@ -32,6 +38,7 @@ public class DataSourceConfig {
         Map<Object, Object> map = new HashMap<>();
         map.put("master", master());
         map.put("slave", slave());
+        map.put("slave1", slave1());
         ds.setTargetDataSources(map);
         ds.setDefaultTargetDataSource(master());
         return ds;
