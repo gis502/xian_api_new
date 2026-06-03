@@ -1,4 +1,4 @@
-package com.gis.xian.bo;
+package com.gis.xian.domain;
 
 import com.gis.xian.params.QgisArgs;
 import lombok.Builder;

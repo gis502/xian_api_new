@@ -5,8 +5,8 @@ spring:
   config:
     import: classpath:config/redis/redis-key.yml
 
-# MyBatis 配置
-mybatis:
+# MyBatis-plus 配置
+mybatis-plus:
   mapper-locations: classpath:com/gis/xian/mapper/*.xml
   type-aliases-package: com.gis.xian.entity
   configuration:

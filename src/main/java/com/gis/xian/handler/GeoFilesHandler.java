@@ -1,9 +1,11 @@
 package com.gis.xian.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gis.xian.config.QgisProperties;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.dto.dzxx.DZXXInfluenceDTO;
 import com.gis.xian.dto.pub.IntyGeoJsonDTO;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -29,6 +31,9 @@ import java.util.List;
 @Component
 public class GeoFilesHandler {
 
+    @Resource
+    private QgisProperties qgisProperties;
+
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
     private static final WKTReader WKT_READER = new WKTReader(GEOMETRY_FACTORY);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -37,7 +42,7 @@ public class GeoFilesHandler {
         // 序列化
         String geoJsonStr = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(featureCollection);
         // geojson文件路径
-        String path = BaseConstants.INTENSITY_GEOJSON_PATH + fileName + ".geojson";
+        String path = qgisProperties.getBasePath() + qgisProperties.getIntensityGeojsonPath() + fileName + ".geojson";
         // 创建文件目录
         File file = new File(path);
         File parentDir = file.getParentFile();

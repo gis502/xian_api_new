@@ -1,0 +1,10 @@
+# qgis配置
+qgis:
+  # QGIS服务地址
+  url: http://localhost:18998/qgis/make/map
+  # 影响场GeoJSON保存路径
+  intensity-geojson-path: influence/
+  # 地震专题图文件输出路径
+  eq-maps-output-path: output/eq/map/
+  # 暴雨专题图文件输出路径
+  rain-maps-output-path: output/rain/map/

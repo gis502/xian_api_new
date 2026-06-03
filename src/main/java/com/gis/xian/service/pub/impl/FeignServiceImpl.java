@@ -2,6 +2,7 @@ package com.gis.xian.service.pub.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.gis.xian.config.DataSource;
+import com.gis.xian.config.QgisProperties;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.core.rabbitmq.DlqOperate;
 import com.gis.xian.enums.BaseEnums;
@@ -36,11 +37,13 @@ public class FeignServiceImpl implements IFeignService {
     private HttpRestClient restclient;
     @Resource
     private RabbitTemplate rabbitTemplate;
-    @Autowired
+    @Resource
     @Lazy
     private IDZEqQueueService idzEqQueueService;
-    @Autowired
+    @Resource
     private DlqOperate dlqOperate;
+    @Resource
+    private QgisProperties qgisProperties;
 
     // 调用制图服务
     @Override
@@ -60,7 +63,7 @@ public class FeignServiceImpl implements IFeignService {
                     ParameterizedTypeReference<String> res = new ParameterizedTypeReference<String>() {
                     };
                     // 制图
-                    String mapName = restclient.post(BaseConstants.HTTP_QGIS_THEMATIC, JSON.toJSON(arg), res);
+                    String mapName = restclient.post(qgisProperties.getUrl(), JSON.toJSON(arg), res);
                     // 专题图名称
                     if (mapName == null || mapName.equals("")) {
                         log.error("产出图件失败!");

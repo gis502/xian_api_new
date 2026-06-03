@@ -38,7 +38,7 @@ spring:
       driver-class-name: org.postgresql.Driver
 
     slave1:
-      url: jdbc:postgresql://localhost:5432/yjzyk_xian?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&postgis=true
+      url: jdbc:postgresql://47.92.216.173:7654/yjzyk_xian?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai&postgis=true
       username: postgres
-      password: Zzw.0401
+      password: zhangsan
       driver-class-name: org.postgresql.Driver

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gis.xian.config.DataSource;
+import com.gis.xian.config.QgisProperties;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.dto.pub.DZProductDTO;
 import com.gis.xian.dto.pub.EqAssessmentDTO;
@@ -20,6 +21,7 @@ import com.gis.xian.service.ex.ServeException;
 import com.gis.xian.service.pub.IDZProductService;
 import com.gis.xian.service.pub.IFeignService;
 import com.gis.xian.utils.BaseUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,12 +47,16 @@ public class DZProductServiceImpl extends ServiceImpl<DZProductMapper, DZProduct
 
     private static final SecureRandom secureRandom = new SecureRandom();
 
-    @Autowired
+    @Resource
     private IFeignService iFeignService;
-    @Autowired
+    @Resource
     private IActiveFaultService iActiveFaultService;
-    @Autowired
+    @Resource
     private IDZXXInfluenceService idzxxInfluenceService;
+    @Resource
+    private QgisProperties qgisProperties;
+    @Resource
+    private EarthquakeHandler earthquakeHandler;
 
     // qgis 地震制图服务
     @Override
@@ -113,15 +119,15 @@ public class DZProductServiceImpl extends ServiceImpl<DZProductMapper, DZProduct
             arg.setQueueId(assess.getEqQueueId());
             arg.setCenterX(assess.getLongitude());
             arg.setCenterY(assess.getLatitude());
-            arg.setInfo(EarthquakeHandler.parseInfo(assess.getEqTime(), assess.getEqMagnitude(), assess.getEqAddr()));
-            arg.setMapTitle(EarthquakeHandler.combine(assess.getEqName(), assess.getEqType(), map));
+            arg.setInfo(earthquakeHandler.parseInfo(assess.getEqTime(), assess.getEqMagnitude(), assess.getEqAddr()));
+            arg.setMapTitle(earthquakeHandler.combine(assess.getEqName(), assess.getEqType(), map));
             arg.setMapTime(BaseUtils.formatTime(LocalDateTime.now(), false));
             arg.setMapLayout(BaseConstants.MAP_LAYOUT_A4); // A4
             arg.setMapUint(BaseConstants.MAP_UNIT);    // 单位
             // 死信队列中获取单张图片
             arg.setName(map.getName());
-            arg.setOutFile(EarthquakeHandler.getPath(assess.getEvent(), assess.getEqQueueId(), BaseConstants.MAP_LAYOUT_A4, map));
-            arg.setPath(BaseConstants.EQ_MAPS_TEMPLATE_PATH + map.getName() + ".qgz");
+            arg.setOutFile(earthquakeHandler.getPath(assess.getEvent(), assess.getEqQueueId(), BaseConstants.MAP_LAYOUT_A4, map));
+            arg.setPath(qgisProperties.getEqMapsTemplatePath() + map.getName() + ".qgz");
             arg.setDisaster(BaseConstants.EQ_DISASTER_MAP);  // 地震灾害
 
             // 缩放规则
@@ -141,15 +147,15 @@ public class DZProductServiceImpl extends ServiceImpl<DZProductMapper, DZProduct
             arg.setQueueId(assess.getEqQueueId());
             arg.setCenterX(assess.getLongitude());
             arg.setCenterY(assess.getLatitude());
-            arg.setInfo(EarthquakeHandler.parseInfo(assess.getEqTime(), assess.getEqMagnitude(), assess.getEqAddr()));
-            arg.setMapTitle(EarthquakeHandler.combine(assess.getEqName(), assess.getEqType(), map));
+            arg.setInfo(earthquakeHandler.parseInfo(assess.getEqTime(), assess.getEqMagnitude(), assess.getEqAddr()));
+            arg.setMapTitle(earthquakeHandler.combine(assess.getEqName(), assess.getEqType(), map));
             arg.setMapTime(BaseUtils.formatTime(LocalDateTime.now(), false));
             arg.setMapLayout(BaseConstants.MAP_LAYOUT_A3); // A3
             arg.setMapUint(BaseConstants.MAP_UNIT);    // 单位
             // 死信队列中获取单张图片
             arg.setName(map.getName());
-            arg.setOutFile(EarthquakeHandler.getPath(assess.getEvent(), assess.getEqQueueId(), BaseConstants.MAP_LAYOUT_A3, map));
-            arg.setPath(BaseConstants.EQ_MAPS_TEMPLATE_PATH + map.getName() + ".qgz");
+            arg.setOutFile(earthquakeHandler.getPath(assess.getEvent(), assess.getEqQueueId(), BaseConstants.MAP_LAYOUT_A3, map));
+            arg.setPath(qgisProperties.getEqMapsTemplatePath() + map.getName() + ".qgz");
             arg.setDisaster(BaseConstants.EQ_DISASTER_MAP);  // 地震灾害
 
             // 缩放规则

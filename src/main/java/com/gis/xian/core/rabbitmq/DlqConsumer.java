@@ -1,7 +1,8 @@
 package com.gis.xian.core.rabbitmq;
 
 import com.alibaba.fastjson2.JSON;
-import com.gis.xian.bo.DlqMessage;
+import com.gis.xian.config.QgisProperties;
+import com.gis.xian.domain.DlqMessage;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.enums.BaseEnums;
 import com.gis.xian.params.QgisArgs;
@@ -29,8 +30,10 @@ public class DlqConsumer {
     private HttpRestClient restclient;
     @Resource
     private RabbitTemplate rabbitTemplate;
-    @Autowired
+    @Resource
     private IDZEqQueueService idzEqQueueService;
+    @Resource
+    private QgisProperties qgisProperties;
 
     // 最大重试次数
     private int maxRetry = 3;
@@ -56,7 +59,7 @@ public class DlqConsumer {
             // 重试处理逻辑（复用原invoke的核心逻辑）
             ParameterizedTypeReference<String> res = new ParameterizedTypeReference<String>() {
             };
-            String mapName = restclient.post(BaseConstants.HTTP_QGIS_THEMATIC, JSON.toJSON(arg), res);
+            String mapName = restclient.post(qgisProperties.getUrl(), JSON.toJSON(arg), res);
 
             if (mapName == null || mapName.equals("")) {
                 throw new Exception("重试后产出图件仍失败");

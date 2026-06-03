@@ -5,7 +5,10 @@ server:
 # 生产环境配置
 spring:
   config:
-    import: classpath:config/database/application-database-prod.yml
+    import:
+      - classpath:config/database/application-database-prod.yml
+      - classpath:config/qgis/application-qgis-prod.yml
+      - classpath:config/customize/application-customize-prod.yml
 
   # redis
   data:

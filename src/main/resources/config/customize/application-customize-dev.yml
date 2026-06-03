@@ -1,0 +1,8 @@
+# qgis配置
+qgis:
+  # 地震专题图模板路径
+  eq-maps-template-path: D:/代码/xian_api_new/src/main/resources/template/qgis-template/eq/
+  # 暴雨专题图模板路径
+  rain-maps-template-path: D:/代码/xian_api_new/src/main/resources/template/qgis-template/rain/
+  # QGIS基础路径
+  base-path: F:/files/xian/maps/

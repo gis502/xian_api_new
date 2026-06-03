@@ -1,6 +1,6 @@
 package com.gis.xian.core.rabbitmq;
 
-import com.gis.xian.bo.DlqMessage;
+import com.gis.xian.domain.DlqMessage;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.params.QgisArgs;
 import jakarta.annotation.Resource;

@@ -13,16 +13,10 @@ public class BaseConstants {
 
 
     // url
-    public static final String EQ_MAPS_TEMPLATE_PATH = "D:/home/dzxx/maps/eq/";     // 地震专题图模板路径
-    public static final String RAIN_MAPS_TEMPLATE_PATH = "D:/home/dzxx/maps/rain/";     // 暴雨专题图模板路径
-    public static final String INTENSITY_GEOJSON_PATH = "D:/home/dzxx/output/influence/";     // 影响场保存路径
-    public static final String EQ_MAPS_OUTPUT_PATH = "D:/home/dzxx/output/eq/map/";     // 地震专题图文件输出路径
-    public static final String RAIN_MAPS_OUTPUT_PATH = "D:/home/dzxx/output/rain/map/";     // 暴雨专题图文件输出路径
-    public static final String EQ_DOCUMENT_OUTPUT_PATH = "D:/home/dzxx/output/eq/地震应急预评估报告.docx";     // 地震评估报告文件输出路径
-    public static final String RAIN_DOCUMENT_OUTPUT_PATH = "D:/home/dzxx/output/rain/暴雨应急预评估报告.docx";     // 暴雨评估报告文件输出路径
+    public static final String RAIN_MAPS_TEMPLATE_PATH = "F:/files/xian/dzxx/maps/rain/";     // 暴雨专题图模板路径
+    public static final String RAIN_MAPS_OUTPUT_PATH = "F:/files/xian/dzxx/output/rain/map/";     // 暴雨专题图文件输出路径
+    public static final String RAIN_DOCUMENT_OUTPUT_PATH = "F:/files/xian/dzxx/output/rain/暴雨应急预评估报告.docx";     // 暴雨评估报告文件输出路径
 
-    // ip
-    public static final String HTTP_QGIS_THEMATIC = "http://localhost:18998/qgis/make/map";    // 专题图
 
     // 提示语
     public static final String PARAMS_ERROR = "参数有误,请重新传入!";

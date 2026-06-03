@@ -19,6 +19,7 @@ import com.gis.xian.service.dzxx.IDZXXInfluenceService;
 import com.gis.xian.service.ex.ParmaException;
 import com.gis.xian.service.ex.ServiceException;
 import com.gis.xian.service.pub.IDZInfluenceService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +46,8 @@ public class DZXXInfluenceServiceImpl extends ServiceImpl<DZXXInfluenceMapper, D
     private EllipseToWktHandler ellipseToWktHandler;
     @Autowired
     private IDZInfluenceService idzInfluenceService;
+    @Resource
+    private EarthquakeHandler earthquakeHandler;
 
     // 处理地震影响场数据
     @Override
@@ -60,11 +63,11 @@ public class DZXXInfluenceServiceImpl extends ServiceImpl<DZXXInfluenceMapper, D
             // 根据烈度值和震级生成影响场
             for (int intensity : intensities) {
                 // 根据烈度和震级计算长轴
-                double longUranium = EarthquakeHandler.calculateRa(assess.getEqMagnitude(), intensity);
+                double longUranium = earthquakeHandler.calculateRa(assess.getEqMagnitude(), intensity);
                 // 根据烈度和震级计算短轴
-                double shortUranium = EarthquakeHandler.calculateRb(assess.getEqMagnitude(), intensity);
+                double shortUranium = earthquakeHandler.calculateRb(assess.getEqMagnitude(), intensity);
                 // 根据长短轴计算面积
-                double area = EarthquakeHandler.calculateArea(longUranium, shortUranium);
+                double area = earthquakeHandler.calculateArea(longUranium, shortUranium);
 
                 // 获取断层走向 角度
                 ActiveFaultDTO shortlyFault = faultService.getShortlyFault(assess.getLongitude(), assess.getLatitude());

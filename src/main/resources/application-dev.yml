@@ -5,7 +5,10 @@ server:
 # 开发环境配置
 spring:
   config:
-    import: classpath:config/database/application-database-dev.yml
+    import:
+      - classpath:config/database/application-database-dev.yml
+      - classpath:config/qgis/application-qgis-dev.yml
+      - classpath:config/customize/application-customize-dev.yml
 
 
   # redis

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.gis.xian.config.DataSource;
+import com.gis.xian.config.QgisProperties;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.dto.dzxx.DZXXInfluenceDTO;
 import com.gis.xian.dto.pub.DZInfluenceDTO;
@@ -15,6 +16,7 @@ import com.gis.xian.query.EqQuery;
 import com.gis.xian.service.ex.ParmaException;
 import com.gis.xian.service.ex.ServiceException;
 import com.gis.xian.service.pub.IDZInfluenceService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.beans.BeanUtils;
@@ -36,8 +38,10 @@ import java.util.Map;
 @DataSource("slave1")
 public class DZInfluenceServiceImpl extends ServiceImpl<DZInfluenceMapper, DZInfluence> implements IDZInfluenceService {
 
-    @Autowired
+    @Resource
     private GeoFilesHandler handler;
+    @Resource
+    private QgisProperties qgisProperties;
 
 
     // 将影响场以文件形式保存
@@ -76,7 +80,7 @@ public class DZInfluenceServiceImpl extends ServiceImpl<DZInfluenceMapper, DZInf
             handler.writeGeoJsonToFile(features, fineName);
             log.info("地震影响场GeoJson文件已生成成功!");
 
-            influence.setPath(BaseConstants.INTENSITY_GEOJSON_PATH + fineName + ".geojson");
+            influence.setPath(qgisProperties.getBasePath() + qgisProperties.getIntensityGeojsonPath() + fineName + ".geojson");
             handleDzxxData(influence);
 
         } catch (Exception ex) {
