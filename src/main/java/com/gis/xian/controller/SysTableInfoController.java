@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 数据库表信息控制器
@@ -203,23 +202,6 @@ public class SysTableInfoController extends BaseController {
             @SuppressWarnings("unchecked")
             Map<String, Object> updateData = (Map<String, Object>) request.get("updateData");
             
-            if (whereConditions == null || whereConditions.isEmpty()) {
-                return ApiResponse.error("WHERE条件不能为空");
-            }
-            if (updateData == null || updateData.isEmpty()) {
-                return ApiResponse.error("更新数据不能为空");
-            }
-            
-            // 处理 geometry 字段：将 lon 和 lat 转换为 WKB
-            Map<String, Object> columns = sysTableInfoService.getTableColumns(tableName)
-                    .stream()
-                    .collect(Collectors.toMap(
-                            col -> (String) col.get("column_name"),
-                            col -> col
-                    ));
-            
-            processGeometryUpdate(updateData, columns);
-            
             sysTableInfoService.updateTableData(tableName, whereConditions, updateData);
             return ApiResponse.ok(null);
         } catch (Exception e) {
@@ -228,42 +210,67 @@ public class SysTableInfoController extends BaseController {
     }
 
     /**
-     * 处理 geometry 字段更新：将 lon 和 lat 转换为 WKB
-     * @param updateData 更新数据
-     * @param columns 字段信息
+     * 新增表数据记录
+     * @param tableName 表名
+     * @param insertData 新增数据
+     * @return 操作结果
      */
-    private void processGeometryUpdate(Map<String, Object> updateData, Map<String, Object> columns) {
-        if (updateData == null || columns == null) {
-            return;
+    @PostMapping("/insert-data/{tableName}")
+    public ApiResponse<Void> insertTableData(
+            @PathVariable String tableName,
+            @RequestBody Map<String, Object> insertData) {
+        try {
+            // 移除主键字段（如果传了id，由数据库自动生成）
+            insertData.remove("id");
+            
+            sysTableInfoService.insertTableData(tableName, insertData);
+            return ApiResponse.ok(null);
+        } catch (Exception e) {
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 处理 geometry 字段更新：将 lon 和 lat 转换为 WKB
+     * @param tableName 表名
+     * @param whereConditions WHERE条件
+     * @param updateData 更新数据
+     * @return 处理后的更新数据
+     */
+    private Map<String, Object> processGeometryUpdate(String tableName, Map<String, Object> whereConditions, Map<String, Object> updateData) {
+        // 获取表字段信息
+        List<Map<String, Object>> columns = sysTableInfoService.getTableColumns(tableName);
+        
+        // 检查是否存在 lon 和 lat 字段
+        boolean hasLon = false;
+        boolean hasLat = false;
+        for (Map<String, Object> col : columns) {
+            String columnName = (String) col.get("column_name");
+            if ("lon".equals(columnName)) hasLon = true;
+            if ("lat".equals(columnName)) hasLat = true;
         }
         
-        // 检查是否有 lon 和 lat 字段
-        if (updateData.containsKey("lon") && updateData.containsKey("lat")) {
-            // 查找 geometry 类型的字段
-            for (Map.Entry<String, Object> entry : columns.entrySet()) {
-                String columnName = entry.getKey();
-                Map<String, Object> colInfo = (Map<String, Object>) entry.getValue();
-                String dataType = (String) colInfo.get("data_type");
+        // 如果同时有 lon 和 lat，转换为 geom 字段
+        if (hasLon && hasLat && updateData.containsKey("lon") && updateData.containsKey("lat")) {
+            try {
+                Object lonValue = updateData.get("lon");
+                Object latValue = updateData.get("lat");
                 
-                if (dataType != null && dataType.toLowerCase().contains("geometry")) {
-                    try {
-                        // 将 lon 和 lat 转换为 WKB
-                        String lon = updateData.get("lon").toString();
-                        String lat = updateData.get("lat").toString();
-                        String wkb = GeometryUtil.lonLatToWkb(lon, lat);
-                        
-                        // 更新 geometry 字段
-                        updateData.put(columnName, wkb);
-                        
-                        // 移除 lon 和 lat 字段
-                        updateData.remove("lon");
-                        updateData.remove("lat");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                if (lonValue != null && latValue != null) {
+                    // 转换为 WKB（传入字符串参数）
+                    String wkb = GeometryUtil.lonLatToWkb(lonValue.toString(), latValue.toString());
+                    
+                    // 移除 lon 和 lat，添加 geom
+                    updateData.remove("lon");
+                    updateData.remove("lat");
+                    updateData.put("geom", wkb);
                 }
+            } catch (Exception e) {
+                System.err.println("转换 lon/lat 到 WKB 失败: " + e.getMessage());
             }
         }
+        
+        return updateData;
     }
 }
 

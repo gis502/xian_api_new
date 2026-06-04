@@ -54,4 +54,11 @@ public interface SysTableInfoService {
      * @param updateData 更新数据
      */
     void updateTableData(String tableName, Map<String, Object> whereConditions, Map<String, Object> updateData);
+
+    /**
+     * 新增表数据记录
+     * @param tableName 表名
+     * @param insertData 新增数据
+     */
+    void insertTableData(String tableName, Map<String, Object> insertData);
 }
