@@ -61,4 +61,11 @@ public interface SysTableInfoService {
      * @param insertData 新增数据
      */
     void insertTableData(String tableName, Map<String, Object> insertData);
+
+    /**
+     * 删除表数据记录（物理删除）
+     * @param tableName 表名
+     * @param ids 要删除的记录主键ID列表
+     */
+    void deleteTableData(String tableName, List<Object> ids);
 }

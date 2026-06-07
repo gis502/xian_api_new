@@ -60,5 +60,21 @@ public interface SysTableInfoMapper {
     void updateTableData(@Param("tableName") String tableName,
                          @Param("whereConditions") Map<String, Object> whereConditions,
                          @Param("updateData") Map<String, Object> updateData);
+
+    /**
+     * 新增表数据
+     * @param tableName 表名
+     * @param insertData 新增数据
+     */
+    void insertTableData(@Param("tableName") String tableName,
+                         @Param("insertData") Map<String, Object> insertData);
+
+    /**
+     * 删除表数据（物理删除）
+     * @param tableName 表名
+     * @param ids 要删除的记录主键ID列表
+     */
+    void deleteTableData(@Param("tableName") String tableName,
+                         @Param("ids") List<Object> ids);
 }
 

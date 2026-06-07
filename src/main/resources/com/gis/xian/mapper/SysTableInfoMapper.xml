@@ -84,4 +84,29 @@
         </foreach>
     </update>
 
+    <!-- 新增表数据 -->
+    <insert id="insertTableData">
+        INSERT INTO ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <foreach collection="insertData" index="key" separator=",">
+                ${key}
+            </foreach>
+        </trim>
+        VALUES
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <foreach collection="insertData" item="value" index="key" separator=",">
+                #{value}
+            </foreach>
+        </trim>
+    </insert>
+
+    <!-- 删除表数据（物理删除） -->
+    <delete id="deleteTableData">
+        DELETE FROM ${tableName}
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 </mapper>

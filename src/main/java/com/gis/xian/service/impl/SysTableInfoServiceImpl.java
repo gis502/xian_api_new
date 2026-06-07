@@ -122,5 +122,40 @@ public class SysTableInfoServiceImpl implements SysTableInfoService {
         
         sysTableInfoMapper.updateTableData(tableName, whereConditions, updateData);
     }
+
+    @Override
+    public void insertTableData(String tableName, Map<String, Object> insertData) {
+        if (tableName == null || tableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("表名不能为空");
+        }
+        if (insertData == null || insertData.isEmpty()) {
+            throw new IllegalArgumentException("新增数据不能为空");
+        }
+        
+        // 移除id字段（由数据库自动生成）
+        insertData.remove("id");
+        
+        sysTableInfoMapper.insertTableData(tableName, insertData);
+        
+        // 清除表数据缓存
+        String cacheKeyPattern = "xian:table:data:" + tableName + ":*";
+        redisTemplate.delete(cacheKeyPattern);
+    }
+
+    @Override
+    public void deleteTableData(String tableName, List<Object> ids) {
+        if (tableName == null || tableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("表名不能为空");
+        }
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("要删除的ID列表不能为空");
+        }
+        
+        sysTableInfoMapper.deleteTableData(tableName, ids);
+        
+        // 清除表数据缓存
+        String cacheKeyPattern = "xian:table:data:" + tableName + ":*";
+        redisTemplate.delete(cacheKeyPattern);
+    }
 }
 
