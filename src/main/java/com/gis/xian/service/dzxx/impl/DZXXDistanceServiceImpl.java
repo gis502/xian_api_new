@@ -14,6 +14,7 @@ import com.gis.xian.service.base.IShanXiCountyService;
 import com.gis.xian.service.base.IShanXiTownsService;
 import com.gis.xian.service.dzxx.IDZXXDistanceService;
 import com.gis.xian.service.ex.ParmaException;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.*;
 import org.springframework.beans.BeanUtils;
@@ -35,11 +36,11 @@ import java.util.List;
 public class DZXXDistanceServiceImpl extends ServiceImpl<DZXXDistanceMapper, DZXXDistance> implements IDZXXDistanceService {
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(PrecisionModel.FLOATING), 4326);
 
-    @Autowired
+    @Resource
     private IShanXiCitiesService iShanXiCitiesService;
-    @Autowired
+    @Resource
     private IShanXiCountyService iShanXiCountyService;
-    @Autowired
+    @Resource
     private IShanXiTownsService iShanXiTownsService;
 
     // 处理所有乡镇表

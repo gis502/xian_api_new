@@ -6,8 +6,13 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.AllowedListDeserializingMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.Arrays;
 
 /**
  * @author zzw
@@ -66,11 +71,22 @@ public class RabbitConfig {
         return BindingBuilder.bind(dlqQueue()).to(exchange()).with(BaseConstants.DLQ_QUEUE);
     }
 
+    @Bean
+    public MessageConverter messageConverter() {
+        SimpleMessageConverter converter = new SimpleMessageConverter();
+        converter.setAllowedListPatterns(Arrays.asList(
+                "com.gis.xian.params.QgisArgs",
+                "com.gis.xian.domain.DlqMessage"
+        ));
+        return converter;
+    }
+
     // 设置消息回调函数 自动确认消息 ack
     @Bean
     public RabbitTemplate createRabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.setConnectionFactory(connectionFactory);
+        rabbitTemplate.setMessageConverter(messageConverter());
         // 设置开启Mandatory，才能触发回调函数，无论消息推送结果怎么样都强制调用回调函数
         rabbitTemplate.setMandatory(true);
 

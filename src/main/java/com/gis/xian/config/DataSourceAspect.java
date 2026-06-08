@@ -12,9 +12,12 @@ import org.springframework.stereotype.Component;
 @Order(1)
 @Slf4j
 public class DataSourceAspect {
-    
+
     @Around("@annotation(dataSource) || @within(dataSource)")
     public Object around(ProceedingJoinPoint point, DataSource dataSource) throws Throwable {
+        if (dataSource == null) {
+            return point.proceed();
+        }
         try {
             String dsName = dataSource.value();
             log.debug("切换数据源: {}", dsName);

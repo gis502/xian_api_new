@@ -40,11 +40,11 @@ import java.util.List;
 public class DZXXInfluenceServiceImpl extends ServiceImpl<DZXXInfluenceMapper, DZXXInfluence> implements IDZXXInfluenceService {
 
 
-    @Autowired
+    @Resource
     private IActiveFaultService faultService;
-    @Autowired
+    @Resource
     private EllipseToWktHandler ellipseToWktHandler;
-    @Autowired
+    @Resource
     private IDZInfluenceService idzInfluenceService;
     @Resource
     private EarthquakeHandler earthquakeHandler;

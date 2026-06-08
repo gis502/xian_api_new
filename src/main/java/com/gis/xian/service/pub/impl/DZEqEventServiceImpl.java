@@ -17,6 +17,7 @@ import com.gis.xian.service.ex.ServeException;
 import com.gis.xian.service.pub.IDZEqEventService;
 import com.gis.xian.service.pub.IDZEqQueueService;
 import com.gis.xian.utils.BaseUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 @DataSource("slave1")
 public class DZEqEventServiceImpl extends ServiceImpl<DZEqEventMapper, DZEqEvent> implements IDZEqEventService {
 
-    @Autowired
+    @Resource
     private IDZXXCenterService idzxxCenterService;
-    @Autowired
+    @Resource
     private IDZEqQueueService idzEqQueueService;
 
     // 地震业务触发

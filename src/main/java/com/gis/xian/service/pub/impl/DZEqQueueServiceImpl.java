@@ -17,6 +17,7 @@ import com.gis.xian.service.ex.ServeException;
 import com.gis.xian.service.pub.IDZEqQueueService;
 import com.gis.xian.service.pub.IDZProductService;
 import com.gis.xian.utils.BaseUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,11 @@ import java.time.LocalDateTime;
 @DataSource("slave1")
 public class DZEqQueueServiceImpl extends ServiceImpl<DZEqQueueMapper, DZEqQueue> implements IDZEqQueueService {
 
-    @Autowired
+    @Resource
     private IDZXXDistanceService idzxxDistanceService;
-    @Autowired
+    @Resource
     private IDZXXInfluenceService idzxxInfluenceService;
-    @Autowired
+    @Resource
     private IDZProductService idzProductService;
 
     // 地震评估
