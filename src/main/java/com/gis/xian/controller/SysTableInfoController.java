@@ -16,7 +16,7 @@ import java.util.Map;
  * 数据库表信息控制器
  */
 @RestController
-@RequestMapping("/api/table")
+@RequestMapping("/table")
 public class SysTableInfoController extends BaseController {
 
     @Autowired
@@ -202,6 +202,9 @@ public class SysTableInfoController extends BaseController {
             @SuppressWarnings("unchecked")
             Map<String, Object> updateData = (Map<String, Object>) request.get("updateData");
             
+            // 处理 geometry 字段更新
+            updateData = processGeometryUpdate(tableName, whereConditions, updateData);
+            
             sysTableInfoService.updateTableData(tableName, whereConditions, updateData);
             return ApiResponse.ok(null);
         } catch (Exception e) {
@@ -223,10 +226,152 @@ public class SysTableInfoController extends BaseController {
             // 移除主键字段（如果传了id，由数据库自动生成）
             insertData.remove("id");
             
+            // 处理字段类型转换
+            processInsertData(tableName, insertData);
+            
             sysTableInfoService.insertTableData(tableName, insertData);
             return ApiResponse.ok(null);
         } catch (Exception e) {
             return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 删除表数据记录（物理删除）
+     * @param tableName 表名
+     * @param request 请求体，包含 ids 数组
+     * @return 操作结果
+     */
+    @DeleteMapping("/delete-data/{tableName}")
+    public ApiResponse<Void> deleteTableData(
+            @PathVariable String tableName,
+            @RequestBody Map<String, Object> request) {
+        try {
+            @SuppressWarnings("unchecked")
+            List<Object> ids = (List<Object>) request.get("ids");
+            
+            if (ids == null || ids.isEmpty()) {
+                return ApiResponse.error("请选择要删除的记录");
+            }
+            
+            System.out.println("\n========================================");
+            System.out.println("🗑️ 开始删除数据");
+            System.out.println("表名: " + tableName);
+            System.out.println("删除IDs: " + ids);
+            System.out.println("========================================\n");
+            
+            sysTableInfoService.deleteTableData(tableName, ids);
+            
+            System.out.println("✅ 删除成功！\n");
+            return ApiResponse.ok(null);
+        } catch (Exception e) {
+            System.err.println("❌ 删除失败：");
+            e.printStackTrace();
+            return ApiResponse.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 处理新增数据的字段类型转换
+     * @param tableName 表名
+     * @param insertData 新增数据
+     */
+    private void processInsertData(String tableName, Map<String, Object> insertData) {
+        System.out.println("📋 获取表字段信息...");
+        List<Map<String, Object>> columns = sysTableInfoService.getTableColumns(tableName);
+        System.out.println("字段数量: " + columns.size());
+        
+        for (Map<String, Object> col : columns) {
+            String columnName = (String) col.get("column_name");
+            String dataType = (String) col.get("data_type");
+            
+            // 只打印我们关心的字段
+            if ("create_time".equals(columnName) || "update_time".equals(columnName)) {
+                System.out.println("\n🕒 检查字段: " + columnName);
+                System.out.println("  数据库类型: " + dataType);
+                System.out.println("  是否包含在insertData中: " + insertData.containsKey(columnName));
+                
+                if (insertData.containsKey(columnName)) {
+                    Object value = insertData.get(columnName);
+                    System.out.println("  原始值: " + value);
+                    System.out.println("  原始类型: " + (value != null ? value.getClass().getName() : "null"));
+                    
+                    if (value == null) {
+                        System.out.println("  ⏭️ 值为null，跳过");
+                        continue;
+                    }
+                    
+                    // 处理时间字段
+                    if (dataType != null && (dataType.toLowerCase().contains("timestamp") || 
+                        dataType.toLowerCase().contains("date"))) {
+                        System.out.println("  🔧 检测到时间字段，开始转换...");
+                        try {
+                            String timeStr = value.toString().trim();
+                            System.out.println("    原始时间字符串: " + timeStr);
+                            
+                            // 替换 T 为空格（兼容 ISO 8601 格式）
+                            timeStr = timeStr.replace("T", " ");
+                            // 移除时区信息（如果有）
+                            if (timeStr.contains("+")) {
+                                timeStr = timeStr.substring(0, timeStr.indexOf("+"));
+                            }
+                            if (timeStr.contains("Z")) {
+                                timeStr = timeStr.replace("Z", "");
+                            }
+                            System.out.println("    处理后时间字符串: " + timeStr);
+                            
+                            // 解析时间字符串
+                            java.time.LocalDateTime localDateTime = java.time.LocalDateTime.parse(
+                                timeStr, 
+                                java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                            );
+                            System.out.println("    解析为LocalDateTime: " + localDateTime);
+                            
+                            // 转换为 Timestamp
+                            java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf(localDateTime);
+                            insertData.put(columnName, timestamp);
+                            
+                            System.out.println("    ✅ 转换成功！");
+                            System.out.println("    新值: " + timestamp);
+                            System.out.println("    新类型: " + timestamp.getClass().getName());
+                        } catch (Exception e) {
+                            System.err.println("    ❌ 时间字段转换失败！");
+                            System.err.println("    错误: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            
+            // 其他字段的处理（保持原样）
+            if (dataType == null || !insertData.containsKey(columnName)) {
+                continue;
+            }
+            
+            Object value = insertData.get(columnName);
+            if (value == null) {
+                continue;
+            }
+            
+            // 处理整数字段
+            if (dataType.toLowerCase().contains("int")) {
+                try {
+                    insertData.put(columnName, Integer.parseInt(value.toString()));
+                } catch (Exception e) {
+                    System.err.println("整数字段转换失败: " + columnName + ", 值: " + value);
+                }
+            }
+            
+            // 处理浮点数字段
+            else if (dataType.toLowerCase().contains("float") || 
+                     dataType.toLowerCase().contains("double") ||
+                     dataType.toLowerCase().contains("numeric")) {
+                try {
+                    insertData.put(columnName, Double.parseDouble(value.toString()));
+                } catch (Exception e) {
+                    System.err.println("浮点数字段转换失败: " + columnName + ", 值: " + value);
+                }
+            }
         }
     }
 
