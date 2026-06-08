@@ -1,6 +1,7 @@
 package com.gis.xian.entity;
 
 import lombok.Data;
+import java.sql.Timestamp;
 
 /**
  * 数据库表信息
@@ -26,4 +27,14 @@ public class SysTableInfo {
      * 数据大小
      */
     private String dataSize;
+
+    /**
+     * 创建时间
+     */
+    private Timestamp createTime;
+
+    /**
+     * 更新时间
+     */
+    private Timestamp updateTime;
 }

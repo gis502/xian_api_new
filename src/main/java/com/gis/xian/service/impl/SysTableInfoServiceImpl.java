@@ -34,7 +34,16 @@ public class SysTableInfoServiceImpl implements SysTableInfoService {
         // 1. 先从Redis缓存中获取
         Object cached = redisTemplate.opsForValue().get(tableInfoListKey);
         if (cached != null) {
-            return JSON.parseArray(cached.toString(), SysTableInfo.class);
+            // 检查缓存数据是否包含新字段
+            List<SysTableInfo> cachedTables = JSON.parseArray(cached.toString(), SysTableInfo.class);
+            if (cachedTables != null && !cachedTables.isEmpty()) {
+                // 如果第一条记录有 createTime 字段，说明是新数据
+                if (cachedTables.get(0).getCreateTime() != null) {
+                    return cachedTables;
+                }
+                // 否则是旧数据，清除缓存重新查询
+                redisTemplate.delete(tableInfoListKey);
+            }
         }
         
         // 2. 缓存未命中，查询数据库

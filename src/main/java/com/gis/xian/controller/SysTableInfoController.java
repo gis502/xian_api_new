@@ -40,6 +40,18 @@ public class SysTableInfoController extends BaseController {
     @GetMapping("/data-management/tables")
     public ApiResponse<List<SysTableInfo>> getDataManagementTables() {
         List<SysTableInfo> tables = sysTableInfoService.getAllTables();
+        
+        // 打印第一条数据的时间字段，用于调试
+        if (tables != null && !tables.isEmpty()) {
+            SysTableInfo firstTable = tables.get(0);
+            System.out.println("\n========================================");
+            System.out.println(" 表列表查询结果");
+            System.out.println("表名: " + firstTable.getTableName());
+            System.out.println("创建时间: " + firstTable.getCreateTime());
+            System.out.println("更新时间: " + firstTable.getUpdateTime());
+            System.out.println("========================================\n");
+        }
+        
         return ApiResponse.ok(tables);
     }
 

@@ -7,6 +7,8 @@
         <result property="tableComment" column="table_comment" />
         <result property="rowCount" column="row_count" />
         <result property="dataSize" column="data_size" />
+        <result property="createTime" column="create_time" />
+        <result property="updateTime" column="update_time" />
     </resultMap>
 
     <!-- 获取所有数据库表信息 -->
@@ -15,11 +17,14 @@
             t.table_name,
             COALESCE(d.description, '') as table_comment,
             COALESCE(s.n_live_tup, 0) as row_count,
-            '0 MB' as data_size
+            '0 MB' as data_size,
+            tm.create_time,
+            tm.update_time
         FROM information_schema.tables t
             LEFT JOIN pg_class c ON t.table_name = c.relname
             LEFT JOIN pg_description d ON c.oid = d.objoid AND d.objsubid = 0
             LEFT JOIN pg_stat_user_tables s ON t.table_name = s.relname
+            LEFT JOIN table_metadata tm ON t.table_name = REPLACE(tm.table_name, 'public.', '')
         WHERE t.table_schema = 'public'
             AND t.table_type = 'BASE TABLE'
             AND t.table_name != 'spatial_ref_sys'
