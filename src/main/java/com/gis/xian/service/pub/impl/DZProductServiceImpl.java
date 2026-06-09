@@ -8,9 +8,11 @@ import com.gis.xian.config.QgisProperties;
 import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.dto.pub.DZProductDTO;
 import com.gis.xian.dto.pub.EqAssessmentDTO;
+import com.gis.xian.dto.pub.RAssessmentDTO;
 import com.gis.xian.entity.pub.DZProduct;
 import com.gis.xian.enums.BaseEnums;
 import com.gis.xian.enums.EqMapsEnums;
+import com.gis.xian.enums.RainMapsEnums;
 import com.gis.xian.handler.EarthquakeHandler;
 import com.gis.xian.mapper.pub.DZProductMapper;
 import com.gis.xian.query.ProductQuery;
@@ -50,10 +52,6 @@ public class DZProductServiceImpl extends ServiceImpl<DZProductMapper, DZProduct
     @Resource
     private IFeignService iFeignService;
     @Resource
-    private IActiveFaultService iActiveFaultService;
-    @Resource
-    private IDZXXInfluenceService idzxxInfluenceService;
-    @Resource
     private QgisProperties qgisProperties;
     @Resource
     private EarthquakeHandler earthquakeHandler;
@@ -66,6 +64,17 @@ public class DZProductServiceImpl extends ServiceImpl<DZProductMapper, DZProduct
         List<EqMapsEnums> maps = Arrays.asList(EqMapsEnums.values());
         // 设置制图参数
         List<QgisArgs> args = setMakeEqMapsArgs(assess, maps);
+        // 调用出图服务
+        iFeignService.invoke(args);
+    }
+
+    @Override
+    @Async("xianPool")
+    public void makeRainstormMaps(RAssessmentDTO assess) {
+        // 待产专题图集
+        List<RainMapsEnums> maps = Arrays.asList(RainMapsEnums.values());
+        // 设置制图参数
+        List<QgisArgs> args = setMakeRainstormMapsArgs(assess, maps);
         // 调用出图服务
         iFeignService.invoke(args);
     }
@@ -165,6 +174,67 @@ public class DZProductServiceImpl extends ServiceImpl<DZProductMapper, DZProduct
 
             args.add(arg);
         }
+        log.info("制图参数设置完成!");
+
+        return args;
+    }
+
+    // 暴雨 制图参数
+    private List<QgisArgs> setMakeRainstormMapsArgs(RAssessmentDTO assess, List<RainMapsEnums> maps) {
+        // 专题图集参数
+        List<QgisArgs> args = new ArrayList<>();
+
+        // A4 画幅
+        for (RainMapsEnums map : maps) {
+            // qgis参数
+            QgisArgs arg = new QgisArgs();
+            arg.setId(map.getNum());
+            arg.setEvent(assess.getRainId());
+            arg.setQueueId(assess.getRainQueueId());
+            arg.setCenterX(assess.getLongitude());
+            arg.setCenterY(assess.getLatitude());
+            arg.setInfo(earthquakeHandler.parseRInfo(assess.getOccurrenceTime(), assess.getRainfall(), assess.getDuration()));
+            arg.setMapTitle(earthquakeHandler.combineR(assess.getPosition(), assess.getRainType(), map));
+            arg.setMapTime(BaseUtils.formatTime(LocalDateTime.now(), false));
+            arg.setMapLayout(BaseConstants.MAP_LAYOUT_A3); // A4
+            arg.setMapUint(BaseConstants.MAP_UNIT);    // 单位
+            // 死信队列中获取单张图片
+            arg.setName(map.getName());
+            arg.setOutFile(earthquakeHandler.getRPath(assess.getRainId(), assess.getRainQueueId(), BaseConstants.MAP_LAYOUT_A4, map));
+            arg.setPath(qgisProperties.getRainMapsTemplatePath() + map.getName() + ".qgz");
+            arg.setDisaster(BaseConstants.RAIN_DISASTER_MAP);  // 暴雨灾害
+            // 按规则缩放
+            arg.setZoomRule(BaseEnums.NO.getCode().toString());    // 默认不缩放
+            arg.setZoomValue("");  // 默认缩放值
+
+            args.add(arg);
+        }
+
+        // 增加 A3 画幅
+        for (RainMapsEnums map : maps) {
+            // qgis参数
+            QgisArgs arg = new QgisArgs();
+            arg.setId(map.getNum());
+            arg.setEvent(assess.getRainId());
+            arg.setQueueId(assess.getRainQueueId());
+            arg.setCenterX(assess.getLongitude());
+            arg.setCenterY(assess.getLatitude());
+            arg.setInfo(earthquakeHandler.parseRInfo(assess.getOccurrenceTime(), assess.getRainfall(), assess.getDuration()));
+            arg.setMapTitle(earthquakeHandler.combineR(assess.getPosition(), assess.getRainType(), map));
+            arg.setMapTime(BaseUtils.formatTime(LocalDateTime.now(), false));
+            arg.setMapLayout(BaseConstants.MAP_LAYOUT_A4); // A4
+            arg.setMapUint(BaseConstants.MAP_UNIT);    // 单位
+            // 死信队列中获取单张图片
+            arg.setName(map.getName());
+            arg.setOutFile(earthquakeHandler.getRPath(assess.getRainId(), assess.getRainQueueId(), BaseConstants.MAP_LAYOUT_A3, map));
+            arg.setPath(qgisProperties.getRainMapsTemplatePath() + map.getName() + ".qgz");
+            arg.setDisaster(BaseConstants.RAIN_DISASTER_MAP);  // 暴雨灾害
+            arg.setZoomRule(BaseEnums.NO.getCode().toString());    // 默认不缩放
+            arg.setZoomValue("");  // 默认缩放值
+
+            args.add(arg);
+        }
+
         log.info("制图参数设置完成!");
 
         return args;

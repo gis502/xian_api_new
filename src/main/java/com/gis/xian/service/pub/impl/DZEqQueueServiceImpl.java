@@ -69,6 +69,26 @@ public class DZEqQueueServiceImpl extends ServiceImpl<DZEqQueueMapper, DZEqQueue
         }
     }
 
+    @Transactional
+    @Override
+    public void assess(RAssessmentDTO assess) {
+        log.info("开始评估,评估参数：{}", assess);
+        // 异常值
+        if (assess == null) {
+            throw new ParmaException(BaseConstants.PARAMS_ERROR);
+        }
+        // 评估业务
+        try {
+            // 初始化评估
+            initial(assess, BaseConstants.MANUAL);
+            // 专题图产出
+            idzProductService.makeRainstormMaps(assess);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw new ServeException(BaseConstants.ASSESS_SERVER_ERROR);
+        }
+    }
+
     // 地震初始化评估进度和评估状态
     private void initial(EqAssessmentDTO assess, int type) {
 

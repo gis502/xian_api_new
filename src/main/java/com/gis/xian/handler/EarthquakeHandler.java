@@ -101,7 +101,7 @@ public class EarthquakeHandler {
         // 地震事件 + 批次
         String batch = queueId.substring(rainId.length());
         String path = rainId + "/" + batch + "/" + size + "/" + map.getName();
-        return String.format("%s", BaseConstants.RAIN_MAPS_OUTPUT_PATH + path + ".jpg");
+        return String.format("%s", qgisProperties.getBasePath() + qgisProperties.getRainMapsOutputPath() + path + ".jpg");
     }
 
     public String format(LocalDateTime time) {

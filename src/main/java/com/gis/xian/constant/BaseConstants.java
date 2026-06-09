@@ -10,13 +10,8 @@ import java.util.Map;
  */
 public class BaseConstants {
 
-
-
-    // url
-    public static final String RAIN_MAPS_TEMPLATE_PATH = "F:/files/xian/dzxx/maps/rain/";     // 暴雨专题图模板路径
+    // 暴雨专题图模板路径
     public static final String RAIN_MAPS_OUTPUT_PATH = "F:/files/xian/dzxx/output/rain/map/";     // 暴雨专题图文件输出路径
-    public static final String RAIN_DOCUMENT_OUTPUT_PATH = "F:/files/xian/dzxx/output/rain/暴雨应急预评估报告.docx";     // 暴雨评估报告文件输出路径
-
 
     // 提示语
     public static final String PARAMS_ERROR = "参数有误,请重新传入!";
