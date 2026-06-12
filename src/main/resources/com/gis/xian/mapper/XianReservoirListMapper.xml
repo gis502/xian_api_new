@@ -17,15 +17,15 @@
             <result property="projectScale" column="project_scale" />
             <result property="hasHiddenDanger" column="has_hidden_danger" />
             <result property="note1" column="note1" />
-            <result property="lon" column="longitude" />
-            <result property="lat" column="latitude" />
+            <result property="lon" column="lon" />
+            <result property="lat" column="lon" />
             <result property="geom" column="geom" />
             <result property="isDelete" column="is_delete" />
     </resultMap>
 
     <!-- 获取所有水库基础点 -->
     <select id="getBasePoints" resultMap="BaseResultMap">
-        SELECT id, reservoir_name, longitude, latitude FROM xian_reservoir_list
+        SELECT id, reservoir_name, lon, lat FROM xian_reservoir_list
         <where>
             is_delete = 0
         </where>
@@ -33,7 +33,7 @@
 
     <!-- 根据id获取水库详情 -->
     <select id="getPointDetailById" resultMap="BaseResultMap">
-        SELECT id, reservoir_name, location, safety_assess_result, longitude, latitude FROM xian_reservoir_list
+        SELECT id, reservoir_name, location, safety_assess_result, lon, lat FROM xian_reservoir_list
         <where>
             id = #{id} AND is_delete = 0
         </where>

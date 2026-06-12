@@ -86,7 +86,7 @@ public class XianBridge {
     /**
      * 位置
      */
-    private Object point;
+    private Object geom;
 
     /**
      * 逻辑删除标识，0未删除，1已删除
@@ -120,7 +120,7 @@ public class XianBridge {
             && (this.getMaster() == null ? other.getMaster() == null : this.getMaster().equals(other.getMaster()))
             && (this.getMaint() == null ? other.getMaint() == null : this.getMaint().equals(other.getMaint()))
             && (this.getNote() == null ? other.getNote() == null : this.getNote().equals(other.getNote()))
-            && (this.getPoint() == null ? other.getPoint() == null : this.getPoint().equals(other.getPoint()))
+            && (this.getGeom() == null ? other.getGeom() == null : this.getGeom().equals(other.getGeom()))
             && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()));
     }
 
@@ -143,7 +143,7 @@ public class XianBridge {
         result = prime * result + ((getMaster() == null) ? 0 : getMaster().hashCode());
         result = prime * result + ((getMaint() == null) ? 0 : getMaint().hashCode());
         result = prime * result + ((getNote() == null) ? 0 : getNote().hashCode());
-        result = prime * result + ((getPoint() == null) ? 0 : getPoint().hashCode());
+        result = prime * result + ((getGeom() == null) ? 0 : getGeom().hashCode());
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
         return result;
     }
@@ -169,7 +169,7 @@ public class XianBridge {
         sb.append(", master=").append(master);
         sb.append(", maint=").append(maint);
         sb.append(", note=").append(note);
-        sb.append(", point=").append(point);
+        sb.append(", geom=").append(geom);
         sb.append(", isDelete=").append(isDelete);
         sb.append("]");
         return sb.toString();

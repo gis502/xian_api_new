@@ -281,7 +281,7 @@ public class XianFirefighter {
     /**
      * 
      */
-    private Object point;
+    private Object geom;
 
     /**
      * 逻辑删除标识，0未删除，1已删除
@@ -354,7 +354,7 @@ public class XianFirefighter {
             && (this.getWriteTime() == null ? other.getWriteTime() == null : this.getWriteTime().equals(other.getWriteTime()))
             && (this.getLon() == null ? other.getLon() == null : this.getLon().equals(other.getLon()))
             && (this.getLat() == null ? other.getLat() == null : this.getLat().equals(other.getLat()))
-            && (this.getPoint() == null ? other.getPoint() == null : this.getPoint().equals(other.getPoint()))
+            && (this.getGeom() == null ? other.getGeom() == null : this.getGeom().equals(other.getGeom()))
             && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()));
     }
 
@@ -416,7 +416,7 @@ public class XianFirefighter {
         result = prime * result + ((getWriteTime() == null) ? 0 : getWriteTime().hashCode());
         result = prime * result + ((getLon() == null) ? 0 : getLon().hashCode());
         result = prime * result + ((getLat() == null) ? 0 : getLat().hashCode());
-        result = prime * result + ((getPoint() == null) ? 0 : getPoint().hashCode());
+        result = prime * result + ((getGeom() == null) ? 0 : getGeom().hashCode());
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
         return result;
     }
@@ -481,7 +481,7 @@ public class XianFirefighter {
         sb.append(", writeTime=").append(writeTime);
         sb.append(", lon=").append(lon);
         sb.append(", lat=").append(lat);
-        sb.append(", point=").append(point);
+        sb.append(", geom=").append(geom);
         sb.append(", isDelete=").append(isDelete);
         sb.append("]");
         return sb.toString();

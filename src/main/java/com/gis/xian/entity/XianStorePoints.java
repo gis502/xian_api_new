@@ -251,7 +251,7 @@ public class XianStorePoints {
     /**
      * 
      */
-    private Object point;
+    private Object geom;
 
     /**
      * 
@@ -318,7 +318,7 @@ public class XianStorePoints {
             && (this.getOverwriteTime() == null ? other.getOverwriteTime() == null : this.getOverwriteTime().equals(other.getOverwriteTime()))
             && (this.getLon() == null ? other.getLon() == null : this.getLon().equals(other.getLon()))
             && (this.getLat() == null ? other.getLat() == null : this.getLat().equals(other.getLat()))
-            && (this.getPoint() == null ? other.getPoint() == null : this.getPoint().equals(other.getPoint()))
+            && (this.getGeom() == null ? other.getGeom() == null : this.getGeom().equals(other.getGeom()))
             && (this.getIsDelete() == null ? other.getIsDelete() == null : this.getIsDelete().equals(other.getIsDelete()));
     }
 
@@ -374,7 +374,7 @@ public class XianStorePoints {
         result = prime * result + ((getOverwriteTime() == null) ? 0 : getOverwriteTime().hashCode());
         result = prime * result + ((getLon() == null) ? 0 : getLon().hashCode());
         result = prime * result + ((getLat() == null) ? 0 : getLat().hashCode());
-        result = prime * result + ((getPoint() == null) ? 0 : getPoint().hashCode());
+        result = prime * result + ((getGeom() == null) ? 0 : getGeom().hashCode());
         result = prime * result + ((getIsDelete() == null) ? 0 : getIsDelete().hashCode());
         return result;
     }
@@ -433,7 +433,7 @@ public class XianStorePoints {
         sb.append(", overwriteTime=").append(overwriteTime);
         sb.append(", lon=").append(lon);
         sb.append(", lat=").append(lat);
-        sb.append(", point=").append(point);
+        sb.append(", point=").append(geom);
         sb.append(", isDelete=").append(isDelete);
         sb.append("]");
         return sb.toString();
