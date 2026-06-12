@@ -25,6 +25,16 @@ public class DataSourceConfig {
         return DruidDataSourceBuilder.create().build();
     }
     
+    /**
+     * 导出专用数据源
+     * 独立的Druid连接池，最大6个连接
+     */
+    @Bean(name = "exportDataSource")
+    @ConfigurationProperties("spring.datasource.export")
+    public DataSource exportDataSource() {
+        return DruidDataSourceBuilder.create().build();
+    }
+    
     @Bean
     @Primary
     public DataSource dataSource() {
@@ -32,6 +42,7 @@ public class DataSourceConfig {
         Map<Object, Object> map = new HashMap<>();
         map.put("master", master());
         map.put("slave", slave());
+        map.put("export", exportDataSource());
         ds.setTargetDataSources(map);
         ds.setDefaultTargetDataSource(master());
         return ds;

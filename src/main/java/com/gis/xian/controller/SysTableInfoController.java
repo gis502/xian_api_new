@@ -309,14 +309,14 @@ public class SysTableInfoController extends BaseController {
                     System.out.println("  原始类型: " + (value != null ? value.getClass().getName() : "null"));
                     
                     if (value == null) {
-                        System.out.println("  ⏭️ 值为null，跳过");
+                        System.out.println("  值为null，跳过");
                         continue;
                     }
                     
                     // 处理时间字段
                     if (dataType != null && (dataType.toLowerCase().contains("timestamp") || 
                         dataType.toLowerCase().contains("date"))) {
-                        System.out.println("  🔧 检测到时间字段，开始转换...");
+                        System.out.println("  检测到时间字段，开始转换...");
                         try {
                             String timeStr = value.toString().trim();
                             System.out.println("    原始时间字符串: " + timeStr);
@@ -343,11 +343,11 @@ public class SysTableInfoController extends BaseController {
                             java.sql.Timestamp timestamp = java.sql.Timestamp.valueOf(localDateTime);
                             insertData.put(columnName, timestamp);
                             
-                            System.out.println("    ✅ 转换成功！");
+                            System.out.println("     转换成功！");
                             System.out.println("    新值: " + timestamp);
                             System.out.println("    新类型: " + timestamp.getClass().getName());
                         } catch (Exception e) {
-                            System.err.println("    ❌ 时间字段转换失败！");
+                            System.err.println("    时间字段转换失败！");
                             System.err.println("    错误: " + e.getMessage());
                             e.printStackTrace();
                         }

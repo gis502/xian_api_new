@@ -90,9 +90,11 @@ public class DecryptFilter implements Filter {
     private boolean isNoDecryptPath(String requestUri) {
         for (String path : cryptoProperties.getNoDecryptPaths()) {
             if (requestUri.contains(path)) {
+                System.out.println("✅ 请求路径 [" + requestUri + "] 匹配白名单: " + path);
                 return true;
             }
         }
+        System.out.println("❌ 请求路径 [" + requestUri + "] 未匹配白名单，白名单列表: " + cryptoProperties.getNoDecryptPaths());
         return false;
     }
 

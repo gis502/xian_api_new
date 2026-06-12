@@ -41,7 +41,9 @@ safety:
     no-encrypt-paths:
       - /crypto/sm2/public-key
       - /druid
+      - /export
     # 请求无需解密的路径
     no-decrypt-paths:
       - /crypto/sm2/public-key
       - /druid
+      - /export

@@ -13,7 +13,7 @@ public @interface DataSource {
     
     /**
      * 数据源名称
-     * 可选值：master（主库）、slave等
+     * 可选值：master（主库）、slave（从库）、export（导出专用）
      * @return 数据源名称
      */
     String value() default "master";
