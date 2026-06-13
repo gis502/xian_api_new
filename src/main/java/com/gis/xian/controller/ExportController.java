@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/export")
 @Slf4j
-public class ExportController {
+public class ExportController extends BaseController {
 
     @Resource
     private ExportService exportService;

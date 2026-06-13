@@ -33,3 +33,23 @@ spring:
       username: zaihailian
       password: XAYJ@gis2603
       driver-class-name: org.postgresql.Driver
+
+    # 导出专用数据源（独立连接池，最大6个连接）
+    export:
+      url: jdbc:postgresql://10.22.245.138:54321/xianDC?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+      username: zaihailian
+      password: XAYJ@gis2603
+      driver-class-name: org.postgresql.Driver
+      # 导出专用连接池配置（较小，避免占用过多资源）
+      initial-size: 2
+      min-idle: 2
+      max-active: 6
+      max-wait: 120000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: false
+      filters: stat
