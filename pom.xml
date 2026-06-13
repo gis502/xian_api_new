@@ -114,6 +114,13 @@
             <version>${fastjson.version}</version>
         </dependency>
 
+        <!-- Apache Commons CSV - 用于流式写入CSV文件 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.10.0</version>
+        </dependency>
+
         <!-- Spring Boot AOP 支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

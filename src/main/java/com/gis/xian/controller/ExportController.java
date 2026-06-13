@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,89 +20,49 @@ public class ExportController {
     private ExportService exportService;
 
     /**
-     * 分页导出表数据
-     */
-    @GetMapping("/table/{tableName}")
-    public ApiResponse<Map<String, Object>> exportTableData(
-            @PathVariable String tableName,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "1000") int pageSize) {
-
-        try {
-            List<Map<String, Object>> data = exportService.exportTableData(tableName, page, pageSize);
-            int total = exportService.getTableTotalCount(tableName);
-
-            Map<String, Object> result = new java.util.HashMap<>();
-            result.put("data", data);
-            result.put("total", total);
-            result.put("page", page);
-            result.put("pageSize", pageSize);
-
-            return ApiResponse.ok(result);
-        } catch (Exception e) {
-            log.error("导出表数据失败: {}", e.getMessage(), e);
-            return new ApiResponse<>(500, e.getMessage(), null);
-        }
-    }
-
-    /**
-     * 流式导出（适用于超大数据量）
-     */
-    @PostMapping("/stream/{tableName}")
-    public ApiResponse<Void> streamExport(
-            @PathVariable String tableName,
-            @RequestParam(defaultValue = "1000") int batchSize) {
-
-        try {
-            exportService.streamExport(tableName, batchSize);
-            return ApiResponse.ok();
-        } catch (Exception e) {
-            log.error("流式导出失败: {}", e.getMessage(), e);
-            return ApiResponse.error(e.getMessage());
-        }
-    }
-
-    /**
-     * 测试游标分页性能
-     * @param tableName 表名
-     * @param batchSize 批次大小（默认50000）
-     * @param maxBatches 最大批次数（默认10）
+     * 游标分页测试接口
      */
     @GetMapping("/test-cursor/{tableName}")
-    public ApiResponse<String> testCursorPagination(
-            @PathVariable String tableName,
-            @RequestParam(defaultValue = "50000") int batchSize,
-            @RequestParam(defaultValue = "10") int maxBatches) {
-
+    public ApiResponse<Map<String, Object>> testCursorPagination(@PathVariable String tableName) {
+        log.info("收到游标分页测试请求，表名: {}", tableName);
+        
         try {
-            log.info("开始测试游标分页: 表={}, 批次大小={}, 最大批次数={}", 
-                     tableName, batchSize, maxBatches);
-            
-            exportService.testCursorPagination(tableName, batchSize, maxBatches);
-            
-            return ApiResponse.ok("游标分页测试完成，请查看后端日志");
-        } catch (IllegalArgumentException e) {
-            log.warn("游标分页测试失败: {}", e.getMessage());
-            return new ApiResponse<>(500, e.getMessage(), null);
+            Map<String, Object> result = exportService.testCursorPagination(tableName);
+            return ApiResponse.ok(result);
         } catch (Exception e) {
-            log.error("游标分页测试异常: {}", e.getMessage(), e);
-            return new ApiResponse<>(500, "测试失败: " + e.getMessage(), null);
+            log.error("游标分页测试失败: {}", e.getMessage(), e);
+            return ApiResponse.error(500, "测试失败: " + e.getMessage(), null);
         }
     }
 
     /**
-     * 验证表的主键类型
+     * 流式导出表数据到CSV文件
      */
-    @GetMapping("/validate-pk/{tableName}")
-    public ApiResponse<Boolean> validatePrimaryKey(@PathVariable String tableName) {
+    @GetMapping("/stream/{tableName}")
+    public ApiResponse<Map<String, Object>> streamExport(
+            @PathVariable String tableName,
+            @RequestParam(required = false, defaultValue = "./exports") String outputPath) {
+        
+        log.info("收到流式导出请求，表名: {}, 输出路径: {}", tableName, outputPath);
+        
         try {
-            boolean valid = exportService.validateIntegerPrimaryKey(tableName);
-            return ApiResponse.ok(valid);
-        } catch (IllegalArgumentException e) {
-            return new ApiResponse<>(500, e.getMessage(), null);
+            // 确保输出目录存在
+            java.io.File dir = new java.io.File(outputPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            
+            // 生成文件名
+            String fileName = tableName + "_" + System.currentTimeMillis() + ".csv";
+            String fullPath = outputPath + "/" + fileName;
+            
+            // 执行流式导出
+            Map<String, Object> result = exportService.streamExportToCsv(tableName, fullPath);
+            
+            return ApiResponse.ok(result);
         } catch (Exception e) {
-            log.error("验证主键失败: {}", e.getMessage(), e);
-            return new ApiResponse<>(500, "验证失败: " + e.getMessage(), null);
+            log.error("流式导出失败: {}", e.getMessage(), e);
+            return ApiResponse.error(500, "导出失败: " + e.getMessage(), null);
         }
     }
 }

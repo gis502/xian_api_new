@@ -2,10 +2,14 @@ package com.gis.xian.service;
 
 import com.gis.xian.config.DataSource;
 import com.gis.xian.mapper.export.ExportMapper;
+import com.gis.xian.util.CsvWriterUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import java.io.File;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -21,151 +25,149 @@ public class ExportService {
     private ExportMapper exportMapper;
 
     /**
-     * 导出表数据
-     * 使用 @DataSource("export") 切换到导出专用数据源
+     * 默认批次大小（每批查询5万条）
      */
-    @DataSource("export")
-    public List<Map<String, Object>> exportTableData(String tableName, int page, int pageSize) {
-        log.info("开始导出表数据: {}, 页码: {}, 每页: {}", tableName, page, pageSize);
-
-        int offset = (page - 1) * pageSize;
-        return exportMapper.queryTableData(tableName, pageSize, offset);
-    }
+    private static final int DEFAULT_BATCH_SIZE = 50000;
 
     /**
-     * 获取表的总记录数
-     */
-    @DataSource("export")
-    public int getTableTotalCount(String tableName) {
-        return exportMapper.getTableTotalCount(tableName);
-    }
-
-    /**
-     * 流式导出（适用于超大数据量）
-     */
-    @DataSource("export")
-    public void streamExport(String tableName, int batchSize) {
-        log.info("开始流式导出表数据: {}, 批次大小: {}", tableName, batchSize);
-        exportMapper.streamQueryTable(tableName, batchSize);
-    }
-
-    /**
-     * 验证表是否有自增整数主键
+     * 游标分页测试接口
      * @param tableName 表名
-     * @return true 如果有自增整数主键，否则抛出异常
+     * @return 第一批数据
      */
     @DataSource("export")
-    public boolean validateIntegerPrimaryKey(String tableName) {
-        Map<String, Object> pkInfo = exportMapper.getPrimaryKeyInfo(tableName);
+    public Map<String, Object> testCursorPagination(String tableName) {
+        log.info("开始测试游标分页，表名: {}", tableName);
+        
+        long startTime = System.currentTimeMillis();
+        
+        // 查询第一批数据（lastId=0）
+        List<Map<String, Object>> batch = exportMapper.cursorQueryByPk(tableName, 0L, DEFAULT_BATCH_SIZE);
+        
+        long endTime = System.currentTimeMillis();
+        log.info("第一批数据查询完成，数量: {}, 耗时: {} ms", batch.size(), (endTime - startTime));
+        
+        // 返回统计信息
+        return Map.of(
+            "tableName", tableName,
+            "batchSize", batch.size(),
+            "elapsedMs", (endTime - startTime),
+            "hasNext", !batch.isEmpty() && batch.size() >= DEFAULT_BATCH_SIZE
+        );
+    }
 
-        if (pkInfo == null || pkInfo.isEmpty()) {
-            throw new IllegalArgumentException("表 [" + tableName + "] 没有主键，无法使用游标分页");
-        }
-
-        String columnName = (String) pkInfo.get("column_name");
-        String dataType = (String) pkInfo.get("data_type");
-
-        log.info("表 [{}] 的主键: 字段={}, 类型={}", tableName, columnName, dataType);
-
-        // 检查是否是整数类型
-        if (!isIntegerType(dataType)) {
-            throw new IllegalArgumentException(
-                    "表 [" + tableName + "] 的主键类型是 [" + dataType + "]，不是自增整数类型，暂不支持游标分页"
+    /**
+     * 流式导出表数据到CSV文件
+     * @param tableName 表名
+     * @param outputFilePath 输出文件路径
+     * @return 导出统计信息
+     */
+    @DataSource("export")
+    public Map<String, Object> streamExportToCsv(String tableName, String outputFilePath) {
+        log.info("开始流式导出，表名: {}, 输出路径: {}", tableName, outputFilePath);
+        
+        long totalStartTime = System.currentTimeMillis();
+        File outputFile = new File(outputFilePath);
+        
+        try (OutputStream outputStream = CsvWriterUtil.createBomOutputStream(outputFile)) {
+            CSVPrinter csvPrinter = CsvWriterUtil.createCsvPrinter(outputStream);
+            
+            int batchIndex = 0;
+            Long lastId = 0L;
+            int totalRows = 0;
+            List<String> headers = null;
+            
+            while (true) {
+                long batchStartTime = System.currentTimeMillis();
+                
+                // 游标分页查询
+                List<Map<String, Object>> batch = exportMapper.cursorQueryByPk(tableName, lastId, DEFAULT_BATCH_SIZE);
+                
+                if (batch.isEmpty()) {
+                    log.info("第{}批数据为空，导出结束", batchIndex + 1);
+                    break;
+                }
+                
+                // 第一批数据时，提取并写入表头
+                if (headers == null) {
+                    headers = CsvWriterUtil.extractHeaders(batch);
+                    CsvWriterUtil.writeHeaders(csvPrinter, headers);
+                    log.info("CSV表头已写入，列数: {}", headers.size());
+                }
+                
+                // 批量写入CSV
+                CsvWriterUtil.writeRows(csvPrinter, batch, headers);
+                
+                // 更新统计信息
+                int batchSize = batch.size();
+                totalRows += batchSize;
+                lastId = getLastIdFromBatch(batch);
+                
+                long batchEndTime = System.currentTimeMillis();
+                batchIndex++;
+                
+                log.info("第{}批导出完成，本批数量: {}, 累计数量: {}, 耗时: {} ms", 
+                        batchIndex, batchSize, totalRows, (batchEndTime - batchStartTime));
+                
+                // 如果本批数据小于批次大小，说明已经是最后一批
+                if (batchSize < DEFAULT_BATCH_SIZE) {
+                    log.info("已达到最后一批数据");
+                    break;
+                }
+                
+                // TODO: 这里可以接入进度更新机制（下一步实现）
+                // updateProgress(tableName, totalRows, batchIndex);
+            }
+            
+            // 关闭CSV打印机（会自动flush）
+            CsvWriterUtil.closeCsvPrinter(csvPrinter);
+            
+            long totalEndTime = System.currentTimeMillis();
+            long totalTime = totalEndTime - totalStartTime;
+            
+            log.info("导出完成！总行数: {}, 总耗时: {} ms, 平均速度: {} 行/秒", 
+                    totalRows, totalTime, totalRows * 1000 / totalTime);
+            
+            return Map.of(
+                "success", true,
+                "tableName", tableName,
+                "outputPath", outputFilePath,
+                "totalRows", totalRows,
+                "totalBatches", batchIndex,
+                "elapsedMs", totalTime,
+                "avgSpeed", totalRows * 1000 / totalTime
             );
+            
+        } catch (Exception e) {
+            log.error("导出失败，表名: {}, 错误: {}", tableName, e.getMessage(), e);
+            throw new RuntimeException("导出失败: " + e.getMessage(), e);
         }
-
-        // 检查字段名是否是 id
-        if (!"id".equalsIgnoreCase(columnName)) {
-            log.warn("表 [{}] 的主键字段名是 [{}]，不是标准的 'id'，可能需要调整查询逻辑", tableName, columnName);
-        }
-
-        return true;
     }
 
     /**
-     * 判断数据类型是否为整数类型
+     * 从批次数据中提取最后一个ID
+     * @param batch 批次数据
+     * @return 最后一个ID
      */
-    private boolean isIntegerType(String dataType) {
-        if (dataType == null) {
-            return false;
+    private Long getLastIdFromBatch(List<Map<String, Object>> batch) {
+        if (batch.isEmpty()) {
+            return 0L;
         }
-        String lowerType = dataType.toLowerCase();
-        return lowerType.contains("integer")
-                || lowerType.contains("int")
-                || lowerType.contains("serial")
-                || lowerType.contains("bigint")
-                || lowerType.contains("smallint");
-    }
-
-    /**
-     * 游标分页查询（基于主键ID）
-     * @param tableName 表名
-     * @param lastId 上一批最后一条记录的ID（第一批传null或0）
-     * @param batchSize 批次大小
-     * @return 数据列表
-     */
-    @DataSource("export")
-    public List<Map<String, Object>> cursorQuery(String tableName, Long lastId, int batchSize) {
-        log.debug("游标查询: 表={}, lastId={}, batchSize={}", tableName, lastId, batchSize);
-        return exportMapper.cursorQueryByPk(tableName, lastId != null ? lastId : 0L, batchSize);
-    }
-
-    /**
-     * 测试游标分页性能
-     * @param tableName 表名
-     * @param batchSize 批次大小
-     * @param maxBatches 最大批次数
-     */
-    @DataSource("export")
-    public void testCursorPagination(String tableName, int batchSize, int maxBatches) {
-        log.info("========== 开始测试游标分页性能 ==========");
-        log.info("表名: {}, 批次大小: {}, 最大批次数: {}", tableName, batchSize, maxBatches);
-
-        // 1. 验证主键类型
-        try {
-            validateIntegerPrimaryKey(tableName);
-        } catch (IllegalArgumentException e) {
-            log.error("主键验证失败: {}", e.getMessage());
-            throw e;
+        
+        Map<String, Object> lastRow = batch.get(batch.size() - 1);
+        Object idObj = lastRow.get("id");
+        
+        if (idObj instanceof Number) {
+            return ((Number) idObj).longValue();
         }
-
-        // 2. 循环查询，记录每批耗时
-        Long lastId = 0L;
-        int batchNum = 0;
-        long totalTime = 0;
-
-        while (batchNum < maxBatches) {
-            batchNum++;
-            long startTime = System.currentTimeMillis();
-
-            List<Map<String, Object>> batch = cursorQuery(tableName, lastId, batchSize);
-
-            long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
-            totalTime += duration;
-
-            if (batch == null || batch.isEmpty()) {
-                log.info("第 {} 批: 无数据，结束查询", batchNum);
-                break;
+        
+        // 如果没有id字段，尝试其他常见主键字段
+        for (String possibleIdField : new String[]{"gid", "objectid", "oid"}) {
+            Object val = lastRow.get(possibleIdField);
+            if (val instanceof Number) {
+                return ((Number) val).longValue();
             }
-
-            // 获取本批最后一条记录的ID
-            Map<String, Object> lastRecord = batch.get(batch.size() - 1);
-            Object idObj = lastRecord.get("id");
-            if (idObj instanceof Number) {
-                lastId = ((Number) idObj).longValue();
-            } else {
-                log.error("第 {} 批: 无法获取最后一条记录的ID", batchNum);
-                break;
-            }
-
-            log.info("第 {} 批: 查询 {} 条记录, 耗时 {} ms, lastId={}",
-                    batchNum, batch.size(), duration, lastId);
         }
-
-        double avgTime = totalTime / (double) batchNum;
-        log.info("========== 测试完成 ==========");
-        log.info("总批次数: {}, 总耗时: {} ms, 平均每批耗时: {:.2f} ms",
-                batchNum, totalTime, avgTime);
+        
+        throw new RuntimeException("未找到自增整数主键字段（id/gid/objectid/oid），无法使用游标分页");
     }
 }
