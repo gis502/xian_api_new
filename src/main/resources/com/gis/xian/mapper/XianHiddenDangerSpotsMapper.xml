@@ -25,16 +25,19 @@
         <result property="isDelete" column="is_delete" />
     </resultMap>
 
-    <!-- 获取所有基础点：滑坡、泥石流、山洪、内涝 -->
+    <!-- 获取所有基础点：滑坡、崩塌、泥石流、山洪、内涝 -->
     <select id="getBasePoints" resultMap="XianHiddenDangerSpotsResultMap">
         SELECT id, disaster_name, lon, lat, disaster_type FROM xian_hidden_danger_spots
         <where>
             is_delete = 0
-            AND disaster_type IN('滑坡', '泥石流', '山洪', '内涝')
+            AND disaster_type IN('滑坡', '崩塌', '泥石流', '山洪', '内涝')
             <if test="disasterType != null and disasterType != ''">
                 <choose>
                     <when test="disasterType == 'landslide'">
                         AND disaster_type = '滑坡'
+                    </when>
+                    <when test="disasterType == 'collapse'">
+                        AND disaster_type = '崩塌'
                     </when>
                     <when test="disasterType == 'debris_flow'">
                         AND disaster_type = '泥石流'

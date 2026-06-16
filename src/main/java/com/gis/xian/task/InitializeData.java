@@ -63,6 +63,9 @@ public class InitializeData {
     @Value("${init.data.base-points.hidden-danger.landslide}")
     private String landslideKey;
 
+    @Value("${init.data.base-points.hidden-danger.collapse}")
+    private String collapseKey;
+
     @Value("${init.data.base-points.hidden-danger.debris-flow}")
     private String debrisFlowKey;
 
@@ -127,7 +130,17 @@ public class InitializeData {
             );
             log.info("加载隐患点信息（滑坡）并写入redis完成");
         });
-        
+
+        // 隐患点 - 崩塌
+        CompletableFuture<Void> collapseFuture = CompletableFuture.runAsync(() -> {
+            redisTemplate.opsForValue().set(collapseKey, JSON.toJSONString(
+                            XianHiddenDangerSpotsBasePointVo.entity2Vo(
+                                    xianHiddenDangerSpotsMapper.getBasePoints("collapse"))
+                    )
+            );
+            log.info("加载隐患点信息（崩塌）并写入redis完成");
+        });
+
         // 隐患点 - 泥石流
         CompletableFuture<Void> debrisFlowFuture = CompletableFuture.runAsync(() -> {
             redisTemplate.opsForValue().set(debrisFlowKey, JSON.toJSONString(
@@ -250,7 +263,7 @@ public class InitializeData {
 
         // 等待所有任务完成
         CompletableFuture.allOf(
-                allFuture, landslideFuture, debrisFlowFuture,
+                allFuture, landslideFuture, collapseFuture, debrisFlowFuture,
                 flashFloodFuture, waterLoggingFuture,
                 riskFuture, hospitalsFuture,
                 dangerousSourceFuture, emergencyShelterFuture, firefighterFuture, storePointsFuture, schoolFuture,

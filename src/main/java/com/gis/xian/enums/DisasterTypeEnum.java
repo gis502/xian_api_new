@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum DisasterTypeEnum {
     // 具体灾害类型
     LANDSLIDE("landslide", "滑坡"),
+    COLLAPSE("collapse", "崩塌"),
     DEBRIS_FLOW("debris_flow", "泥石流"),
     FLASH_FLOOD("flash_flood", "山洪"),
     WATER_LOGGING("water_logging", "内涝");

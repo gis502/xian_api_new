@@ -28,6 +28,9 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
     @Value("${init.data.base-points.hidden-danger.landslide}")
     private String landslideKey;
 
+    @Value("${init.data.base-points.hidden-danger.collapse}")
+    private String collapseKey;
+
     @Value("${init.data.base-points.hidden-danger.debris-flow}")
     private String debrisFlowKey;
 
@@ -68,6 +71,8 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
         switch (disasterType) {
             case "landslide":
                 return landslideKey;
+            case "collapse":
+                return collapseKey;
             case "debris_flow":
                 return debrisFlowKey;
             case "flash_flood":

@@ -22,6 +22,7 @@ init:
       hidden-danger:
         all: 'xian:init:data:base-points:hidden-danger:all'
         landslide: 'xian:init:data:base-points:hidden-danger:landslide'
+        collapse: 'xian:init:data:base-points:hidden-danger:collapse'
         debris-flow: 'xian:init:data:base-points:hidden-danger:debris_flow'
         flash-flood: 'xian:init:data:base-points:hidden-danger:flash_flood'
         water-logging: 'xian:init:data:base-points:hidden-danger:water_logging'
