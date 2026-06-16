@@ -2,76 +2,102 @@ package com.gis.xian.utils.safety;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * Geometry 工具类
- * 用于 WKB 和 lon/lat 之间的转换
- */
 public class GeometryUtil {
 
-    /**
-     * 将 WKB 转换为 lon 和 lat
-     * @param wkbHex 十六进制 WKB 数据
-     * @return [lon, lat] 数组
-     */
-    public static String[] wkbToLonLat(String wkbHex) {
-        if (wkbHex == null || wkbHex.isEmpty()) {
-            return null;
-        }
+    // 匹配 WKT 中的坐标对: "lon lat" 或 "lon,lat"
+    private static final Pattern WKT_POINT = Pattern.compile(
+        "POINT\\s*\\(\\s*(-?[\\d.]+)\\s+(-?[\\d.]+)\\s*\\)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern WKT_COORD = Pattern.compile(
+        "(-?[\\d.]+)\\s+(-?[\\d.]+)");
+
+    public static String[] wkbToLonLat(String value) {
+        if (value == null || value.isEmpty()) return null;
 
         try {
-            // 移除 0x 前缀（如果有）
-            if (wkbHex.startsWith("0x") || wkbHex.startsWith("0X")) {
-                wkbHex = wkbHex.substring(2);
+            if (isWkt(value)) {
+                return parseWkt(value);
             }
 
-            byte[] bytes = hexStringToByteArray(wkbHex);
-            ByteBuffer buffer = ByteBuffer.wrap(bytes);
+            String hex = value;
+            if (hex.startsWith("0x") || hex.startsWith("0X")) {
+                hex = hex.substring(2);
+            }
+            if (!hex.matches("^[0-9A-Fa-f]+$") || hex.length() % 2 != 0) {
+                return null;
+            }
 
-            // 读取字节序
+            byte[] bytes = hexStringToByteArray(hex);
+            ByteBuffer buffer = ByteBuffer.wrap(bytes);
             byte byteOrder = buffer.get();
             buffer.order(byteOrder == 1 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
-            // 读取几何类型
             int geometryType = buffer.getInt();
             int type = geometryType & 0x0FFFFFFF;
 
-            // Point 类型 = 1
             if (type == 1) {
                 double lon = buffer.getDouble();
                 double lat = buffer.getDouble();
                 return new String[]{String.valueOf(lon), String.valueOf(lat)};
             }
-
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
-    /**
-     * 将 lon 和 lat 转换为 WKB（十六进制）
-     * @param lon 经度
-     * @param lat 纬度
-     * @return 十六进制 WKB 数据
-     */
+    private static boolean isWkt(String s) {
+        return s.matches("^[A-Za-z].*");
+    }
+
+    private static String[] parseWkt(String wkt) {
+        // POINT(108.948 34.263)
+        Matcher pm = WKT_POINT.matcher(wkt);
+        if (pm.find()) {
+            return new String[]{pm.group(1), pm.group(2)};
+        }
+
+        // SRID=4326;...
+        int semi = wkt.indexOf(';');
+        if (semi > 0) {
+            wkt = wkt.substring(semi + 1).trim();
+            pm = WKT_POINT.matcher(wkt);
+            if (pm.find()) {
+                return new String[]{pm.group(1), pm.group(2)};
+            }
+        }
+
+        // MULTIPOLYGON / POLYGON / LINESTRING / MULTIPOINT — 提取所有坐标算质心
+        List<double[]> coords = new ArrayList<>();
+        Matcher cm = WKT_COORD.matcher(wkt);
+        while (cm.find()) {
+            double lon = Double.parseDouble(cm.group(1));
+            double lat = Double.parseDouble(cm.group(2));
+            coords.add(new double[]{lon, lat});
+        }
+
+        if (!coords.isEmpty()) {
+            double sumLon = 0, sumLat = 0;
+            for (double[] c : coords) { sumLon += c[0]; sumLat += c[1]; }
+            int n = coords.size();
+            return new String[]{String.valueOf(sumLon / n), String.valueOf(sumLat / n)};
+        }
+        return null;
+    }
+
     public static String lonLatToWkb(String lon, String lat) {
         try {
             double lonValue = Double.parseDouble(lon);
             double latValue = Double.parseDouble(lat);
 
-            // 创建 WKB 数据（小端序 Point）
             ByteBuffer buffer = ByteBuffer.allocate(21);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
-
-            // 字节序标识（1 = 小端序）
             buffer.put((byte) 1);
-
-            // 几何类型（1 = Point）
             buffer.putInt(1);
-
-            // 坐标
             buffer.putDouble(lonValue);
             buffer.putDouble(latValue);
 
@@ -82,9 +108,6 @@ public class GeometryUtil {
         }
     }
 
-    /**
-     * 十六进制字符串转字节数组
-     */
     private static byte[] hexStringToByteArray(String s) {
         int len = s.length();
         byte[] data = new byte[len / 2];
@@ -95,9 +118,6 @@ public class GeometryUtil {
         return data;
     }
 
-    /**
-     * 字节数组转十六进制字符串
-     */
     private static String byteArrayToHexString(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
