@@ -40,7 +40,15 @@ safety:
   crypto:
     # 响应无需加密的路径
     no-encrypt-paths:
+      - /export
+      - /export/submit
+      - /export/progress
+      - /export/download
       - /crypto/sm2/public-key
     # 请求无需解密的路径
     no-decrypt-paths:
+      - /export
+      - /export/submit
+      - /export/progress
+      - /export/download
       - /crypto/sm2/public-key

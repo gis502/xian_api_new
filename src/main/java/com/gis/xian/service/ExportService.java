@@ -1,22 +1,19 @@
 package com.gis.xian.service;
 
-import com.gis.xian.config.DataSource;
+import com.gis.xian.entity.ExportTask;
 import com.gis.xian.mapper.export.ExportMapper;
 import com.gis.xian.utils.safety.CsvWriterUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVPrinter;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-import java.io.File;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 导出服务
- * 使用独立的导出数据源，避免影响业务连接池
- */
 @Service
 @Slf4j
 public class ExportService {
@@ -24,150 +21,169 @@ public class ExportService {
     @Resource
     private ExportMapper exportMapper;
 
-    /**
-     * 默认批次大小（每批查询5万条）
-     */
-    private static final int DEFAULT_BATCH_SIZE = 50000;
+    private static final int DEFAULT_BATCH_SIZE = 10000;
+    private static final byte[] UTF8_BOM = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+    private static final int ASYNC_THRESHOLD = 10000;
 
-    /**
-     * 游标分页测试接口
-     * @param tableName 表名
-     * @return 第一批数据
-     */
-    @DataSource("export")
-    public Map<String, Object> testCursorPagination(String tableName) {
-        log.info("开始测试游标分页，表名: {}", tableName);
-        
-        long startTime = System.currentTimeMillis();
-        
-        // 查询第一批数据（lastId=0）
-        List<Map<String, Object>> batch = exportMapper.cursorQueryByPk(tableName, 0L, DEFAULT_BATCH_SIZE);
-        
-        long endTime = System.currentTimeMillis();
-        log.info("第一批数据查询完成，数量: {}, 耗时: {} ms", batch.size(), (endTime - startTime));
-        
-        // 返回统计信息
-        return Map.of(
-            "tableName", tableName,
-            "batchSize", batch.size(),
-            "elapsedMs", (endTime - startTime),
-            "hasNext", !batch.isEmpty() && batch.size() >= DEFAULT_BATCH_SIZE
-        );
+    public boolean shouldUseAsync(int rowCount) {
+        return rowCount >= ASYNC_THRESHOLD;
     }
 
-    /**
-     * 流式导出表数据到CSV文件
-     * @param tableName 表名
-     * @param outputFilePath 输出文件路径
-     * @return 导出统计信息
-     */
-    @DataSource("export")
-    public Map<String, Object> streamExportToCsv(String tableName, String outputFilePath) {
-        log.info("开始流式导出，表名: {}, 输出路径: {}", tableName, outputFilePath);
-        
-        long totalStartTime = System.currentTimeMillis();
-        File outputFile = new File(outputFilePath);
-        
-        try (OutputStream outputStream = CsvWriterUtil.createBomOutputStream(outputFile)) {
+    public int getRowCount(String tableName) {
+        return exportMapper.getTableTotalCount(tableName);
+    }
+
+    public String detectPrimaryKeyColumn(String tableName) {
+        try {
+            Map<String, Object> pkInfo = exportMapper.getPrimaryKeyInfo(tableName);
+            if (pkInfo != null && pkInfo.get("column_name") != null) {
+                return pkInfo.get("column_name").toString();
+            }
+        } catch (Exception e) {
+            log.warn("获取主键信息失败，回退到 id: {}", e.getMessage());
+        }
+        return "id";
+    }
+
+    public List<Map<String, Object>> queryBatch(String tableName, String pkColumn, Long lastId, int batchSize) {
+        return exportMapper.cursorQueryByPkColumn(tableName, pkColumn, lastId, batchSize);
+    }
+
+    public void streamExportToStream(String tableName, OutputStream outputStream) {
+        log.info("同步导出，表名: {}", tableName);
+        long t0 = System.currentTimeMillis();
+        log.info("异步导出 - 检测主键...");
+        String pkColumn = detectPrimaryKeyColumn(tableName);
+        log.info("异步导出 - 主键列: {}", pkColumn);
+
+        try {
+            log.info("异步导出 - 开始计数...");
+            outputStream.write(UTF8_BOM);
             CSVPrinter csvPrinter = CsvWriterUtil.createCsvPrinter(outputStream);
-            
-            int batchIndex = 0;
+
             Long lastId = 0L;
             int totalRows = 0;
             List<String> headers = null;
-            
-            while (true) {
-                long batchStartTime = System.currentTimeMillis();
-                
-                // 游标分页查询
-                List<Map<String, Object>> batch = exportMapper.cursorQueryByPk(tableName, lastId, DEFAULT_BATCH_SIZE);
-                
-                if (batch.isEmpty()) {
-                    log.info("第{}批数据为空，导出结束", batchIndex + 1);
-                    break;
-                }
-                
-                // 第一批数据时，提取并写入表头
+
+            int batchIndex = 0;
+                while (true) {
+                long batchT0 = System.currentTimeMillis();
+                List<Map<String, Object>> batch = queryBatch(tableName, pkColumn, lastId, DEFAULT_BATCH_SIZE);
+                long queryTime = System.currentTimeMillis() - batchT0;
+
+                if (batch.isEmpty()) break;
+
                 if (headers == null) {
                     headers = CsvWriterUtil.extractHeaders(batch);
                     CsvWriterUtil.writeHeaders(csvPrinter, headers);
-                    log.info("CSV表头已写入，列数: {}", headers.size());
                 }
-                
-                // 批量写入CSV
                 CsvWriterUtil.writeRows(csvPrinter, batch, headers);
-                
-                // 更新统计信息
-                int batchSize = batch.size();
-                totalRows += batchSize;
-                lastId = getLastIdFromBatch(batch);
-                
-                long batchEndTime = System.currentTimeMillis();
+
+                int sz = batch.size();
+                totalRows += sz;
+                lastId = getLastIdFromBatch(batch, pkColumn);
+                csvPrinter.flush();
+
                 batchIndex++;
-                
-                log.info("第{}批导出完成，本批数量: {}, 累计数量: {}, 耗时: {} ms", 
-                        batchIndex, batchSize, totalRows, (batchEndTime - batchStartTime));
-                
-                // 如果本批数据小于批次大小，说明已经是最后一批
-                if (batchSize < DEFAULT_BATCH_SIZE) {
-                    log.info("已达到最后一批数据");
-                    break;
-                }
-                
-                // TODO: 这里可以接入进度更新机制（下一步实现）
-                // updateProgress(tableName, totalRows, batchIndex);
+                long batchTime = System.currentTimeMillis() - batchT0;
+                log.info("第 {} 批完成，查询 {} ms，本批总 {} ms，累计 {} 行",
+                        batchIndex, queryTime, batchTime, totalRows);
+
+                if (sz < DEFAULT_BATCH_SIZE) break;
             }
-            
-            // 关闭CSV打印机（会自动flush）
+
             CsvWriterUtil.closeCsvPrinter(csvPrinter);
-            
-            long totalEndTime = System.currentTimeMillis();
-            long totalTime = totalEndTime - totalStartTime;
-            
-            log.info("导出完成！总行数: {}, 总耗时: {} ms, 平均速度: {} 行/秒", 
-                    totalRows, totalTime, totalRows * 1000 / totalTime);
-            
-            return Map.of(
-                "success", true,
-                "tableName", tableName,
-                "outputPath", outputFilePath,
-                "totalRows", totalRows,
-                "totalBatches", batchIndex,
-                "elapsedMs", totalTime,
-                "avgSpeed", totalRows * 1000 / totalTime
-            );
-            
-        } catch (Exception e) {
-            log.error("导出失败，表名: {}, 错误: {}", tableName, e.getMessage(), e);
-            throw new RuntimeException("导出失败: " + e.getMessage(), e);
+            log.info("同步导出完成！{} 行, {} ms", totalRows, System.currentTimeMillis() - t0);
+
+        } catch (IOException e) {
+            throw new RuntimeException("CSV写入失败: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * 从批次数据中提取最后一个ID
-     * @param batch 批次数据
-     * @return 最后一个ID
-     */
-    private Long getLastIdFromBatch(List<Map<String, Object>> batch) {
-        if (batch.isEmpty()) {
-            return 0L;
-        }
-        
-        Map<String, Object> lastRow = batch.get(batch.size() - 1);
-        Object idObj = lastRow.get("id");
-        
-        if (idObj instanceof Number) {
-            return ((Number) idObj).longValue();
-        }
-        
-        // 如果没有id字段，尝试其他常见主键字段
-        for (String possibleIdField : new String[]{"gid", "objectid", "oid"}) {
-            Object val = lastRow.get(possibleIdField);
-            if (val instanceof Number) {
-                return ((Number) val).longValue();
+    @Async("exportTaskExecutor")
+    public void runAsyncExport(Long taskId, String tableName, String filePath) {
+        log.info("异步导出开始，taskId: {}, 表名: {}", taskId, tableName);
+        long t0 = System.currentTimeMillis();
+        log.info("异步导出 - 检测主键...");
+        String pkColumn = detectPrimaryKeyColumn(tableName);
+        log.info("异步导出 - 主键列: {}", pkColumn);
+        int processedRows = 0;
+
+        try {
+            log.info("异步导出 - 开始计数...");
+            int totalRows = getRowCount(tableName);
+            exportMapper.updateTaskProgress(taskId, 0);
+            log.info("异步导出 - 计数完成: {} 行，开始分批导出", totalRows);
+
+            File outputFile = new File(filePath);
+            File parentDir = outputFile.getParentFile();
+            if (parentDir != null && !parentDir.exists()) parentDir.mkdirs();
+
+            try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(outputFile), 65536)) {
+                fos.write(UTF8_BOM);
+                CSVPrinter csvPrinter = CsvWriterUtil.createCsvPrinter(fos);
+
+                Long lastId = 0L;
+                List<String> headers = null;
+
+                int batchIndex = 0;
+                while (true) {
+                    long batchT0 = System.currentTimeMillis();
+                    List<Map<String, Object>> batch = queryBatch(tableName, pkColumn, lastId, DEFAULT_BATCH_SIZE);
+                    long queryTime = System.currentTimeMillis() - batchT0;
+
+                    if (batch.isEmpty()) break;
+
+                    if (headers == null) {
+                        headers = CsvWriterUtil.extractHeaders(batch);
+                        CsvWriterUtil.writeHeaders(csvPrinter, headers);
+                    }
+                    CsvWriterUtil.writeRows(csvPrinter, batch, headers);
+
+                    int sz = batch.size();
+                    processedRows += sz;
+                    lastId = getLastIdFromBatch(batch, pkColumn);
+
+                    csvPrinter.flush();
+                    long batchTime = System.currentTimeMillis() - batchT0;
+
+                    exportMapper.updateTaskProgress(taskId, processedRows);
+
+                    batchIndex++;
+                    log.info("第 {} 批完成，查询 {} ms，本批总 {} ms，累计 {} 行",
+                            batchIndex, queryTime, batchTime, processedRows);
+
+                    if (sz < DEFAULT_BATCH_SIZE) break;
+                }
+
+                CsvWriterUtil.closeCsvPrinter(csvPrinter);
             }
+
+            exportMapper.updateTaskCompleted(taskId, filePath, processedRows);
+            log.info("异步导出完成！taskId: {}, {} 行, {} ms", taskId, processedRows, System.currentTimeMillis() - t0);
+
+        } catch (Exception e) {
+            log.error("异步导出失败，taskId: {}, 错误: {}", taskId, e.getMessage(), e);
+            try { exportMapper.updateTaskFailed(taskId, e.getMessage()); } catch (Exception ignored) {}
         }
-        
-        throw new RuntimeException("未找到自增整数主键字段（id/gid/objectid/oid），无法使用游标分页");
+    }
+
+    public ExportTask getTask(Long taskId) {
+        return exportMapper.findTaskById(taskId);
+    }
+
+    public ExportTask submitTask(String tableName, int totalRows) {
+        ExportTask task = new ExportTask();
+        task.setTableName(tableName);
+        task.setTotalRows(totalRows);
+        exportMapper.insertTask(task);
+        return task;
+    }
+
+    private Long getLastIdFromBatch(List<Map<String, Object>> batch, String pkColumn) {
+        if (batch.isEmpty()) return 0L;
+        Object idObj = batch.get(batch.size() - 1).get(pkColumn);
+        if (idObj instanceof Number) return ((Number) idObj).longValue();
+        throw new RuntimeException("主键列 " + pkColumn + " 不是数字类型，无法游标分页");
     }
 }
