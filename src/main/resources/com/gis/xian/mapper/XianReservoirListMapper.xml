@@ -18,7 +18,7 @@
             <result property="hasHiddenDanger" column="has_hidden_danger" />
             <result property="note1" column="note1" />
             <result property="lon" column="lon" />
-            <result property="lat" column="lon" />
+            <result property="lat" column="lat" />
             <result property="geom" column="geom" />
             <result property="isDelete" column="is_delete" />
     </resultMap>
