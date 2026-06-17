@@ -10,6 +10,11 @@ import java.util.Objects;
 @Data
 public class XianHiddenDangerSpotsPointDetailVo {
     /**
+     * 概率
+     */
+    private String probability;
+
+    /**
      * 序号
      */
     private Long id;
@@ -43,11 +48,6 @@ public class XianHiddenDangerSpotsPointDetailVo {
      * 险情等级
      */
     private String riskGrade;
-
-    /**
-     * 概率
-     */
-    private String probability;
 
     public static XianHiddenDangerSpotsPointDetailVo entity2Vo(XianHiddenDangerSpots entity) {
         XianHiddenDangerSpotsPointDetailVo vo = new XianHiddenDangerSpotsPointDetailVo();

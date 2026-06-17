@@ -10,6 +10,11 @@ import java.util.Objects;
 @Data
 public class XianRiskSpotsPointDetailVo {
     /**
+     * 概率
+     */
+    private String probability;
+
+    /**
      * 序号
      */
     private Long id;
@@ -68,11 +73,6 @@ public class XianRiskSpotsPointDetailVo {
      * 纬度
      */
     private Double lat;
-
-    /**
-     * 概率
-     */
-    private String probability;
 
     public static XianRiskSpotsPointDetailVo entity2Vo(XianRiskSpots entity) {
         XianRiskSpotsPointDetailVo vo = new XianRiskSpotsPointDetailVo();
