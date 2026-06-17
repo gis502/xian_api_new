@@ -1,0 +1,33 @@
+package com.gis.xian.enums.qgis;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * @author zzw
+ * @description: 同用枚举
+ * @date 2026/5/26 上午10:46
+ */
+@Getter
+@AllArgsConstructor
+public enum BaseEnums {
+    // 评估枚举
+    NOT_STARTED(0, "未开始"),
+    CALCULATING(1, "正在计算"),
+    NORMAL_COMPLETED(2, "正常完成"),
+    MANUAL_STOPPED(3, "人工停止"),
+    TIMEOUT_OR_EXCEPTION(4, "超时或异常结束"),
+    NOT_CALCULATE(5, "不计算"),
+
+    // 制图枚举
+    NO(10, "不缩放"),
+    PAN(11, "平移"),
+    LAYER(12, "单图层"),
+    M_LAYER(13, "多图层"),
+    DISTANCE(14, "距离"), //  需要数值。
+    M_LAYER2(15, "按图层合并缩放");
+
+
+    private final Integer code;
+    private final String desc;
+}

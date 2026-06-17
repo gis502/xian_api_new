@@ -23,10 +23,14 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-    #    username: xiaodemo
-    #    password: 1234
     username: zzw
     password: zzw0401
+#    host: 47.92.216.173
+#    port: 4018
+    #    username: xiaodemo
+    #    password: 1234
+#    username: gis
+#    password: gis502
     #虚拟host 可以不设置,使用server默认host
     #    virtual-host: /xiaodemos
     #消息确认配置项
@@ -42,7 +46,7 @@ spring:
         retry:
           enabled: true # 开启消费者重试（建议结合业务幂等性使用）
           max-attempts: 3 # 最大重试次数
-          initial-interval: 1000ms # 第一次重试间隔
+          initial-interval: 10000ms # 第一次重试间隔
           multiplier: 2 # 重试间隔倍数（第二次2s，第三次4s）
 # 日志配置
 logging:

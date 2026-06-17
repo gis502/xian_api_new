@@ -10,9 +10,6 @@ import java.util.Map;
  */
 public class BaseConstants {
 
-    // 暴雨专题图模板路径
-    public static final String RAIN_MAPS_OUTPUT_PATH = "F:/files/xian/dzxx/output/rain/map/";     // 暴雨专题图文件输出路径
-
     // 提示语
     public static final String PARAMS_ERROR = "参数有误,请重新传入!";
     public static final String RESULT_ERROR = "结果空值!";

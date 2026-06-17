@@ -1,0 +1,23 @@
+package com.gis.xian.dto.qgis.earthquake;
+
+import lombok.Data;
+import org.locationtech.jts.geom.Geometry;
+
+/**
+ * @author zzw
+ * @description: DZXXDistanceDTO
+ * @date 2026/5/26 上午10:03
+ */
+@Data
+public class EarthquakeDistanceDTO {
+
+    private Geometry geom;
+    private String eqQueueId;
+    private Integer distanceId; // 市1、县2、镇3
+    private String pId;     // 行政id
+    private String pname;   // 省市县镇名称
+    private String bgmc;    // 行政区划等级
+    private Double distance;    // 距离
+    private String remark;
+
+}

@@ -1,11 +1,10 @@
 package com.gis.xian.controller;
 
-import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.domain.ApiResponse;
-import com.gis.xian.dto.pub.EqAssessmentDTO;
-import com.gis.xian.query.EqQuery;
-import com.gis.xian.service.dzxx.IDZXXInfluenceService;
-import com.gis.xian.service.pub.IDZInfluenceService;
+import com.gis.xian.dto.qgis.earthquake.EarthquakeAssessmentDTO;
+import com.gis.xian.dto.qgis.earthquake.EarthquakeQuery;
+import com.gis.xian.service.qgis.earthquake.IEarthquakeInformationInfluenceService;
+import com.gis.xian.service.qgis.earthquake.IEarthquakeInfluenceService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -27,19 +26,19 @@ import java.util.Map;
 public class DZInfluenceController {
 
     @Resource
-    private IDZInfluenceService idzInfluenceService;
+    private IEarthquakeInfluenceService IEarthquakeInfluenceService;
     @Resource
-    private IDZXXInfluenceService idzxxInfluenceService;
+    private IEarthquakeInformationInfluenceService IEarthquakeInformationInfluenceService;
 
     @PostMapping("/influence")
-    public ApiResponse<Map<String, String>> getInfluence(@RequestBody @Validated EqQuery query) {
-        Map<String, String> influence = idzInfluenceService.getInfluence(query);
+    public ApiResponse<Map<String, String>> getInfluence(@RequestBody @Validated EarthquakeQuery query) {
+        Map<String, String> influence = IEarthquakeInfluenceService.getInfluence(query);
         return ApiResponse.ok(influence);
     }
 
     @PostMapping("/generate/influence")
-    public ApiResponse<String> generateInfluence(@RequestBody @Validated EqAssessmentDTO assess) {
-        idzxxInfluenceService.handle(assess);
+    public ApiResponse<String> generateInfluence(@RequestBody @Validated EarthquakeAssessmentDTO assess) {
+        IEarthquakeInformationInfluenceService.handle(assess);
         return ApiResponse.ok("地震影响场已生成!");
     }
 }

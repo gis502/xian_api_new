@@ -1,14 +1,11 @@
 package com.gis.xian.controller;
 
-import com.gis.xian.constant.BaseConstants;
 import com.gis.xian.domain.ApiResponse;
-import com.gis.xian.dto.pub.EqTriggerDTO;
-import com.gis.xian.query.EqQuery;
-import com.gis.xian.service.pub.IDZEqEventService;
+import com.gis.xian.dto.qgis.earthquake.EarthquakeTriggerDTO;
+import com.gis.xian.dto.qgis.earthquake.EarthquakeQuery;
+import com.gis.xian.service.qgis.earthquake.IEarthquakeEventService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.geolatte.geom.V;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,17 +19,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/open")
 public class DZEqEventController {
     @Resource
-    private IDZEqEventService idzEqEventService;
+    private IEarthquakeEventService IEarthquakeEventService;
 
     @PostMapping("/eq/trigger")
-    public ApiResponse<EqQuery> trigger(@RequestBody @Validated EqTriggerDTO trigger) {
-        EqQuery query = idzEqEventService.trigger(trigger);
+    public ApiResponse<EarthquakeQuery> trigger(@RequestBody @Validated EarthquakeTriggerDTO trigger) {
+        EarthquakeQuery query = IEarthquakeEventService.trigger(trigger);
         return ApiResponse.ok(query);
     }
 
     @PostMapping("/eq/delete/{Id}")
     public ApiResponse<Boolean> delete(@PathVariable Long Id) {
-        Boolean deleted = idzEqEventService.deletedById(Id);
+        Boolean deleted = IEarthquakeEventService.deletedById(Id);
         return ApiResponse.ok(deleted);
     }
 
