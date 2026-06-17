@@ -44,6 +44,11 @@ public class XianHiddenDangerSpotsPointDetailVo {
      */
     private String riskGrade;
 
+    /**
+     * 概率
+     */
+    private String probability;
+
     public static XianHiddenDangerSpotsPointDetailVo entity2Vo(XianHiddenDangerSpots entity) {
         XianHiddenDangerSpotsPointDetailVo vo = new XianHiddenDangerSpotsPointDetailVo();
         vo.setId(entity.getId());

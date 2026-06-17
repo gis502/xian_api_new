@@ -17,7 +17,8 @@ public interface XianHiddenDangerSpotsService {
     /**
      * 根据id获取隐患点详情
      * @param id 隐患点id
+     * @param simulationId 模拟id
      * @return 隐患点详情
      */
-    XianHiddenDangerSpotsPointDetailVo getPointDetailById(Long id);
+    XianHiddenDangerSpotsPointDetailVo getPointDetailById(Long id, Long simulationId);
 }

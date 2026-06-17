@@ -15,7 +15,8 @@ public interface XianRiskSpotsService {
     /**
      * 根据id获取风险点详情
      * @param id 风险点id
+     * @param simulationId 模拟id
      * @return 风险点详情
      */
-    XianRiskSpotsPointDetailVo getPointDetailById(Long id);
+    XianRiskSpotsPointDetailVo getPointDetailById(Long id, Long simulationId);
 }

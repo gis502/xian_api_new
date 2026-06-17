@@ -1,6 +1,8 @@
 package com.gis.xian.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.gis.xian.mapper.XianInferenceResultMapper;
+import com.gis.xian.vo.XianHiddenDangerSpotsPointDetailVo;
 import com.gis.xian.vo.XianRiskSpotsBasePointVo;
 import com.gis.xian.vo.XianRiskSpotsPointDetailVo;
 import com.gis.xian.mapper.XianRiskSpotsMapper;
@@ -21,6 +23,9 @@ public class IXianRiskSpotsServiceImpl implements XianRiskSpotsService {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Resource
+    private XianInferenceResultMapper xianInferenceResultMapper;
+
     @Value("${init.data.base-points.risk}")
     private String riskPointKey;
 
@@ -39,7 +44,14 @@ public class IXianRiskSpotsServiceImpl implements XianRiskSpotsService {
     }
 
     @Override
-    public XianRiskSpotsPointDetailVo getPointDetailById(Long id) {
-        return XianRiskSpotsPointDetailVo.entity2Vo(xianRiskSpotsMapper.getPointDetailById(id));
+    public XianRiskSpotsPointDetailVo getPointDetailById(Long id, Long simulationId) {
+        XianRiskSpotsPointDetailVo pointDetail = XianRiskSpotsPointDetailVo.entity2Vo(xianRiskSpotsMapper.getPointDetailById(id));
+
+        // 根据模拟id和id获取预测结果
+        if(simulationId != null && simulationId != -1L) {
+            pointDetail.setProbability(xianInferenceResultMapper.getProbabilityByIdAndPointId(simulationId, id + "_2") + "%");
+        }
+
+        return pointDetail;
     }
 }

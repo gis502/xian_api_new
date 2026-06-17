@@ -24,8 +24,8 @@ public class XianRiskSpotsController {
         return ApiResponse.ok(xianRiskSpotsService.getBasePoints());
     }
 
-    @GetMapping("point-detail/{id}")
-    public ApiResponse<XianRiskSpotsPointDetailVo> getPointDetailById(@PathVariable String id) {
-        return ApiResponse.ok(xianRiskSpotsService.getPointDetailById(Long.parseLong(id)));
+    @GetMapping("point-detail/{id}/{simulationId}")
+    public ApiResponse<XianRiskSpotsPointDetailVo> getPointDetailById(@PathVariable String id, @PathVariable String simulationId) {
+        return ApiResponse.ok(xianRiskSpotsService.getPointDetailById(Long.parseLong(id), Long.parseLong(simulationId)));
     }
 }

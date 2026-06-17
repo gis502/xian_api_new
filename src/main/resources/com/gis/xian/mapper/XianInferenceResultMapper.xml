@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gis.xian.mapper.XianInferenceResultMapper">
+
+    <resultMap id="XianInferenceResultResultMap" type="com.gis.xian.entity.XianInferenceResult">
+        <id property="id" column="id" />
+        <result property="name" column="name" />
+        <result property="eventType" column="event_type" />
+        <result property="occurredTime" column="occurred_time" />
+        <result property="operationType" column="operation_type" />
+        <result property="result" column="result" />
+        <result property="condition" column="condition" />
+        <result property="filePath" column="file_path" />
+        <result property="createTime" column="create_time" />
+        <result property="isDelete" column="is_delete" />
+    </resultMap>
+
+    <!-- 根据id和pointId获取概率 -->
+    <select id="getProbabilityByIdAndPointId" resultType="java.lang.String">
+        SELECT result->>#{pointId} FROM xian_inference_result
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+</mapper>

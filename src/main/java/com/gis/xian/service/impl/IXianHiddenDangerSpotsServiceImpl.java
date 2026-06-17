@@ -2,6 +2,7 @@ package com.gis.xian.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import com.gis.xian.entity.XianHiddenDangerSpots;
+import com.gis.xian.mapper.XianInferenceResultMapper;
 import com.gis.xian.vo.XianHiddenDangerSpotsBasePointVo;
 import com.gis.xian.vo.XianHiddenDangerSpotsPointDetailVo;
 import com.gis.xian.mapper.XianHiddenDangerSpotsMapper;
@@ -21,6 +22,9 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
 
     @Resource
     private XianHiddenDangerSpotsMapper xianHiddenDangerSpotsMapper;
+
+    @Resource
+    private XianInferenceResultMapper xianInferenceResultMapper;
 
     @Value("${init.data.base-points.hidden-danger.all}")
     private String allBasePointsKey;
@@ -85,7 +89,14 @@ public class IXianHiddenDangerSpotsServiceImpl implements XianHiddenDangerSpotsS
     }
 
     @Override
-    public XianHiddenDangerSpotsPointDetailVo getPointDetailById(Long id) {
-        return XianHiddenDangerSpotsPointDetailVo.entity2Vo(xianHiddenDangerSpotsMapper.getPointDetailById(id));
+    public XianHiddenDangerSpotsPointDetailVo getPointDetailById(Long id, Long simulationId) {
+        XianHiddenDangerSpotsPointDetailVo pointDetail = XianHiddenDangerSpotsPointDetailVo.entity2Vo(xianHiddenDangerSpotsMapper.getPointDetailById(id));
+
+        // 根据模拟id和id获取预测结果
+        if(simulationId != null && simulationId != -1L) {
+            pointDetail.setProbability(xianInferenceResultMapper.getProbabilityByIdAndPointId(simulationId, id + "_1") + "%");
+        }
+
+        return pointDetail;
     }
 }

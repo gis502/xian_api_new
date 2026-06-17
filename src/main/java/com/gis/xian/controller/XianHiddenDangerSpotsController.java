@@ -22,8 +22,8 @@ public class XianHiddenDangerSpotsController extends BaseController{
         return ApiResponse.ok(xianHiddenDangerSpotsService.getBasePoints(disasterType));
     }
 
-    @GetMapping("point-detail/{id}")
-    public ApiResponse<XianHiddenDangerSpotsPointDetailVo> getPointDetailById(@PathVariable String id) {
-        return ApiResponse.ok(xianHiddenDangerSpotsService.getPointDetailById(Long.parseLong(id)));
+    @GetMapping("point-detail/{id}/{simulationId}")
+    public ApiResponse<XianHiddenDangerSpotsPointDetailVo> getPointDetailById(@PathVariable String id, @PathVariable String simulationId) {
+        return ApiResponse.ok(xianHiddenDangerSpotsService.getPointDetailById(Long.parseLong(id), Long.parseLong(simulationId)));
     }
 }

@@ -69,6 +69,11 @@ public class XianRiskSpotsPointDetailVo {
      */
     private Double lat;
 
+    /**
+     * 概率
+     */
+    private String probability;
+
     public static XianRiskSpotsPointDetailVo entity2Vo(XianRiskSpots entity) {
         XianRiskSpotsPointDetailVo vo = new XianRiskSpotsPointDetailVo();
         vo.setId(entity.getId());
