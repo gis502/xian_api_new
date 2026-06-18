@@ -15,20 +15,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync   // 开启异步支持
 public class AsyncConfig {
 
-    @Bean(name = "exportTaskExecutor")
-    public Executor exportTaskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(3);
-        executor.setQueueCapacity(20);
-        executor.setThreadNamePrefix("export-task-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAwaitTerminationSeconds(120);
-        executor.initialize();
-        return executor;
-    }
-
     @Bean(name = "xianPool")
     public Executor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
