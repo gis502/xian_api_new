@@ -1,24 +1,20 @@
 package com.gis.xian.service;
 
-import com.gis.xian.mapper.export.jichuExportMapper;
-import com.gis.xian.utils.safety.CsvWriterUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVPrinter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import jakarta.annotation.Resource;
 import java.io.*;
-import java.sql.*;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @Slf4j
 public class ExportService {
-
-    @Resource
-    private jichuExportMapper exportMapper;
 
     @Resource
     private JdbcTemplate jdbcTemplate;
@@ -29,70 +25,72 @@ public class ExportService {
     private static final byte[] UTF8_BOM = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
     public void streamExportToStream(String tableName, OutputStream outputStream) {
-        log.info("导出开始，表名: {}", tableName);
+        log.info("COPY 导出开始，表名: {}", tableName);
         long t0 = System.currentTimeMillis();
 
         try {
             transactionTemplate.execute(status -> {
+                AtomicBoolean disconnected = new AtomicBoolean(false);
                 jdbcTemplate.execute((Connection con) -> {
-                    String sql = "SELECT * FROM " + tableName + " ORDER BY " + getPkColumn(tableName);
-                    try (PreparedStatement ps = con.prepareStatement(sql)) {
-                        ps.setFetchSize(5000);
-                        try (ResultSet rs = ps.executeQuery()) {
-                            ResultSetMetaData meta = rs.getMetaData();
-                            int colCount = meta.getColumnCount();
+                    try {
+                        outputStream.write(UTF8_BOM);
 
-                            outputStream.write(UTF8_BOM);
-                            CSVPrinter csvPrinter = CsvWriterUtil.createCsvPrinter(outputStream);
+                        Class<?> baseConnClass = Class.forName("org.postgresql.core.BaseConnection");
+                        Object baseConn = con.unwrap(baseConnClass);
+                        Class<?> cmClass = Class.forName("org.postgresql.copy.CopyManager");
+                        Object copyManager = cmClass.getConstructor(baseConnClass).newInstance(baseConn);
+                        Method copyOut = cmClass.getMethod("copyOut", String.class, OutputStream.class);
+                        String sql = "COPY " + tableName + " TO STDOUT WITH (FORMAT CSV, HEADER, ENCODING 'UTF8')";
+                        long count = (long) copyOut.invoke(copyManager, sql, outputStream);
 
-                            for (int i = 1; i <= colCount; i++) {
-                                csvPrinter.print(meta.getColumnName(i));
-                            }
-                            csvPrinter.println();
-
-                            int rowCount = 0;
-                            long lastLog = System.currentTimeMillis();
-                            while (rs.next()) {
-                                for (int i = 1; i <= colCount; i++) {
-                                    csvPrinter.print(rs.getString(i));
-                                }
-                                csvPrinter.println();
-                                rowCount++;
-
-                                if (rowCount % 5000 == 0) {
-                                    csvPrinter.flush();
-                                    long now = System.currentTimeMillis();
-                                    log.info("已导出 {} 行, 本段 {} ms", rowCount, now - lastLog);
-                                    lastLog = now;
-                                }
-                            }
-                            csvPrinter.flush();
-                            CsvWriterUtil.closeCsvPrinter(csvPrinter);
-
-                            log.info("导出完成！{} 行, {} ms", rowCount, System.currentTimeMillis() - t0);
+                        log.info("COPY 导出完成！{} 行, {} ms", count, System.currentTimeMillis() - t0);
+                    } catch (Exception e) {
+                        if (isClientDisconnect(e)) {
+                            log.info("客户端断开连接，导出中止，表名: {}", tableName);
+                            disconnected.set(true);
+                        } else {
+                            throw new RuntimeException(e);
                         }
-                    } catch (SQLException | IOException e) {
-                        throw new RuntimeException(e);
                     }
                     return null;
                 });
+                if (disconnected.get()) {
+                    status.setRollbackOnly();
+                }
                 return null;
             });
         } catch (Exception e) {
+            if (isClientDisconnect(e)) {
+                log.info("客户端断开连接，导出中止，表名: {}", tableName);
+                return;
+            }
             log.error("导出失败，表名: {}, 错误: {}", tableName, e.getMessage(), e);
             throw new RuntimeException("导出失败: " + e.getMessage(), e);
         }
     }
 
-    private String getPkColumn(String tableName) {
-        try {
-            Map<String, Object> pk = exportMapper.getPrimaryKeyInfo(tableName);
-            if (pk != null && pk.get("column_name") != null) {
-                return pk.get("column_name").toString();
+    /** 解包异常链，检查是否包含客户端断开连接 */
+    private static boolean isClientDisconnect(Throwable e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof InvocationTargetException) {
+                cause = ((InvocationTargetException) cause).getTargetException();
+                continue;
             }
-        } catch (Exception e) {
-            log.warn("获取主键失败: {}", e.getMessage());
+            String msg = cause.getMessage();
+            if (msg != null) {
+                if (msg.contains("Connection reset")
+                        || msg.contains("connection reset")
+                        || msg.contains("ClientAbortException")
+                        || msg.contains("AsyncRequestNotUsableException")
+                        || msg.contains("中止了一个已建立的连接")
+                        || msg.contains("软件中止")
+                        || msg.contains("abort")) {
+                    return true;
+                }
+            }
+            cause = cause.getCause();
         }
-        return "id";
+        return false;
     }
 }
